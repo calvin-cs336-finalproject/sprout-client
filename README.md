@@ -20,3 +20,6 @@ This projects backend is built using Firebase, an app developement platform for 
 
 ## Figma
 This projects UI was designed using Figma, a cloud-based design tool for making interface models. The documentation can be found [here](https://help.figma.com/hc/en-us)
+
+## Polygon.io
+This project uses an API called Polygon.io, which is a Stocks API that lets us query market data. The documentation can be found [here](https://polygon.io/docs/stocks/getting-started)
