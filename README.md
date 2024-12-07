@@ -16,4 +16,7 @@ Our web application is deployed [here](https://cs336-stock-market-project.web.ap
 This project is built using React, a framework for making web applications using TypeScript. The documentation can be found [here](https://react.dev/)
 
 ## Firebase
-This projects backend is built using firebase, an app developement platform for making a firestore database. The documentation can be found [here](https://firebase.google.com/docs)
+This projects backend is built using Firebase, an app developement platform for making a firestore database. The documentation can be found [here](https://firebase.google.com/docs)
+
+## Figma
+This projects UI was designed using Figma, a cloud-based design tool for making interface models. The documentation can be found [here](https://help.figma.com/hc/en-us)
