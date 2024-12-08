@@ -1,6 +1,6 @@
 // src/services/firestoreService.js
 import { collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
-import db from '../firebase';
+import db from '../firebase.js';
 
 // Add a document to a collection
 export const addDocument = async (collectionName, data) => {
