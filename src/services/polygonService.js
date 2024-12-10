@@ -91,6 +91,25 @@ const fetchDataOfAllCompanies = async (startDate, endDate) => {
     }
 };
 
+const fetchDataOfAllCompaniesForOneDay = async (date) => {
+    const top20NYSECompanies = [
+        'AAPL', 'NVDA', 'MSFT', 'AMZN', 'GOOGL', 'META', 'TSLA', 'BRK.B', 'TSM', 'AVGO',
+        'WMT', 'LLY', 'JPM', 'V', 'ORCL', 'UNH', 'XOM', 'NVO', 'MA', 'COST'
+    ];
+    let count = 0;
+    for (let ticker of top20NYSECompanies) {
+        fetchOneSetOfDataFromAPI(ticker, date);
+        count++;
+        if (count === 4) {
+            console.log("Query limit hit, must wait one minute before querying again");
+            await delay(60000); // Wait for 1 minute to not hit query limit
+            count = 0; // Reset the counter
+        }
+    }
+
+};
+
 //fetchAndStoreData('AMZN', '2024-11-06', '2024-12-06');
 //fetchOneSetOfDataFromAPI('BRK.B', '2024-11-06');
 //fetchDataOfAllCompanies('2024-11-06', '2024-12-06');
+fetchDataOfAllCompaniesForOneDay('2024-12-09');
