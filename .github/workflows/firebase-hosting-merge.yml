@@ -14,7 +14,7 @@ jobs:
 
       # Decode the Firebase credentials from the secret
       - name: Decode Firebase credentials
-        run: echo "${{ secrets.FIREBASE_CREDENTIALS }}" | base64 --decode > credentials.js
+        run: echo "${{ secrets.FIREBASE_CREDENTIALS }}" | base64 --decode > src/credentials.js
 
       # Install dependencies and build the project
       - run: npm ci && npm run build
