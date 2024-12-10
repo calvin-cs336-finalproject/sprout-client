@@ -1,9 +1,6 @@
 
-// src/services/firestoreService.js
-import { collection, addDoc, getDocs, doc, setDoc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { collection, getDocs, doc, setDoc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase.js';
-//import dotenv from 'dotenv';
-//dotenv.config();
 
 export const addStockData = async (ticker, date, closePrice, collectionName) => {
   try {
@@ -45,7 +42,6 @@ export const addStockData = async (ticker, date, closePrice, collectionName) => 
   }
 };
 
-
 export const getStockData = async (ticker, collectionName) => {
   const docRef = doc(db, collectionName, ticker);
   const docSnap = await getDoc(docRef);
@@ -54,6 +50,24 @@ export const getStockData = async (ticker, collectionName) => {
     return docSnap.data();
   } else {
     throw new Error(`No document found for ticker: ${ticker}`);
+  }
+};
+
+export const getAllStockData = async (collectionName) => {
+  try {
+    const collectionRef = collection(db, collectionName);
+    const querySnapshot = await getDocs(collectionRef);
+
+    const allStockData = [];
+    querySnapshot.forEach((doc) => {
+      allStockData.push({ id: doc.id, ...doc.data() });
+    });
+
+    console.log(`Successfully fetched all stock data from ${collectionName}`);
+    return allStockData;
+  } catch (error) {
+    console.error("Error fetching all stock data: ", error);
+    throw error;
   }
 };
 

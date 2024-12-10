@@ -11,50 +11,26 @@ import {
   CardContent,
   Grid,
 } from "@mui/material";
-//import Graph from './components/Graph.js';
 import GraphContainer from "./components/GraphContainer.js";
-
-const initialStocks = [
-  { name: "Stock A", price: 100, symbol: "A" },
-  { name: "Stock B", price: 150, symbol: "B" },
-  { name: "Stock C", price: 75, symbol: "C" },
-  { name: "Stock D", price: 200, symbol: "D" },
-];
+import { getAllStockData } from "./services/firestoreService.js";
 
 function App() {
-  const [stocks, setStocks] = useState(initialStocks);
+  const [stocks, setStocks] = useState([]);
   const [selectedStock, setSelectedStock] = useState(null);
   const [userBalance, setUserBalance] = useState(10000); // Default balance
   const [portfolio, setPortfolio] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  //for graph:
-  const [chartData, setChartData] = useState([]);
 
-  //for graph:
   useEffect(() => {
-    // Fetch data from the API
-    async function fetchData() {
+    async function fetchStocks() {
       try {
-        const response = await fetch(
-          `https://api.polygon.io/v1/open-close/AAPL/2023-01-09?adjusted=true&apiKey=YOUR_API_KEY`
-        );
-        const data = await response.json();
-
-        // Format the response to match the graph's expected data structure
-        const formattedData = [
-          {
-            date: data.from, // Use the `from` field as the date
-            close: data.close, // Use the `close` value
-          },
-        ];
-
-        setChartData(formattedData);
+        const fetchedStocks = await getAllStockData('stocks');
+        setStocks(fetchedStocks);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error loading stocks:", error);
       }
     }
-
-    fetchData();
+    fetchStocks();
   }, []);
 
   // Simulate stock price changes every 3 seconds
@@ -63,7 +39,7 @@ function App() {
       setStocks((prevStocks) =>
         prevStocks.map((stock) => {
           const newPrice = Math.max(1, stock.price + (Math.random() - 0.5) * 10);
-          return { ...stock, price: newPrice }; // Update stock price
+          return { ...stock, price: newPrice.toFixed(2) }; // Update stock price
         })
       );
     }, 3000);
@@ -76,27 +52,27 @@ function App() {
       const updatedStock = stocks.find(
         (stock) => stock.name === selectedStock.name
       );
-      setSelectedStock(updatedStock);
+      if (updatedStock) setSelectedStock(updatedStock);
     }
-  }, [stocks, selectedStock]);
+  }, [stocks]);
 
   const handleBuyStock = () => {
     if (!selectedStock) return;
     if (userBalance >= selectedStock.price) {
-      setUserBalance(userBalance - selectedStock.price);
+      setUserBalance((prevBalance) => prevBalance - selectedStock.price);
       setPortfolio((prev) => {
         const existingStock = prev.find((item) => item.name === selectedStock.name);
         if (existingStock) {
           return prev.map((item) =>
             item.name === selectedStock.name
               ? {
-                ...item,
-                quantity: item.quantity + 1,
-                totalInvested: item.totalInvested + selectedStock.price,
-                averagePrice:
-                  (item.totalInvested + selectedStock.price) /
-                  (item.quantity + 1),
-              }
+                  ...item,
+                  quantity: item.quantity + 1,
+                  totalInvested: item.totalInvested + selectedStock.price,
+                  averagePrice:
+                    (item.totalInvested + selectedStock.price) /
+                    (item.quantity + 1),
+                }
               : item
           );
         }
@@ -116,25 +92,25 @@ function App() {
   };
 
   const handleSellStock = (stockToSell) => {
-    const currentStock = stocks.find((s) => s.name === stockToSell.name); // Get the current price
+    const currentStock = stocks.find((s) => s.name === stockToSell.name);
     if (!currentStock) return;
 
     if (stockToSell.quantity > 0) {
       const currentPrice = currentStock.price;
 
-      setUserBalance(userBalance + currentPrice); // Add the current price to balance
+      setUserBalance((prevBalance) => prevBalance + currentPrice);
       setPortfolio((prev) =>
         prev
           .map((item) =>
             item.name === stockToSell.name
               ? {
-                ...item,
-                quantity: item.quantity - 1,
-                totalInvested: item.totalInvested - item.averagePrice, // Reduce invested amount
-              }
+                  ...item,
+                  quantity: item.quantity - 1,
+                  totalInvested: item.totalInvested - item.averagePrice,
+                }
               : item
           )
-          .filter((item) => item.quantity > 0) // Remove stocks with zero quantity
+          .filter((item) => item.quantity > 0)
       );
     } else {
       alert("You don't own enough of this stock to sell!");
@@ -155,7 +131,6 @@ function App() {
       </Typography>
 
       <Grid container spacing={2}>
-        {/* Stocks List */}
         <Grid item xs={12} md={4}>
           <Typography variant="h5" gutterBottom>
             Stocks
@@ -171,7 +146,7 @@ function App() {
           <List>
             {stocks
               .filter((stock) =>
-                stock.name.toLowerCase().includes(searchTerm.toLowerCase())
+                stock.name?.toLowerCase().includes(searchTerm.toLowerCase())
               )
               .map((stock, index) => (
                 <ListItem
@@ -188,7 +163,7 @@ function App() {
                   <Box>
                     <Typography variant="subtitle1">{stock.name}</Typography>
                     <Typography variant="body2" color="textSecondary">
-                      Price: ${stock.price.toFixed(2)}
+                      Price: ${parseFloat(stock.price).toFixed(2)}
                     </Typography>
                   </Box>
                 </ListItem>
@@ -196,7 +171,6 @@ function App() {
           </List>
         </Grid>
 
-        {/* Selected Stock */}
         <Grid item xs={12} md={4}>
           <Typography variant="h5" gutterBottom>
             Selected Stock
@@ -206,7 +180,7 @@ function App() {
               <CardContent>
                 <Typography variant="h6">{selectedStock.name}</Typography>
                 <Typography variant="body1">
-                  Current Price: ${selectedStock.price.toFixed(2)}
+                  Current Price: ${parseFloat(selectedStock.price).toFixed(2)}
                 </Typography>
                 <Button
                   variant="contained"
@@ -226,14 +200,13 @@ function App() {
           )}
         </Grid>
 
-        {/* Portfolio */}
         <Grid item xs={12} md={4}>
           <Typography variant="h5" gutterBottom>
             Portfolio
           </Typography>
           <List>
             {portfolio.map((stock, index) => {
-              const currentStock = stocks.find((s) => s.name === stock.name); // Get current stock price
+              const currentStock = stocks.find((s) => s.name === stock.name);
               return (
                 <ListItem
                   key={index}
@@ -248,12 +221,12 @@ function App() {
                       {stock.name} - {stock.quantity} shares
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
-                      Current Price: ${currentStock?.price.toFixed(2)}
+                      Current Price: ${parseFloat(currentStock?.price || stock.price).toFixed(2)}
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
                       Change:{" "}
                       {calculatePercentageChange(
-                        currentStock?.price || stock.price,
+                        parseFloat(currentStock?.price || stock.price),
                         stock.averagePrice
                       ).toFixed(2)}
                       %
