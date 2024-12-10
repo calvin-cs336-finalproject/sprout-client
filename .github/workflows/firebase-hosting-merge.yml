@@ -11,7 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      # Decode the Firebase credentials from the secret
+      - name: Decode Firebase credentials
+        run: echo "${{ secrets.FIREBASE_CREDENTIALS }}" | base64 --decode > credentials.js
+
+      # Install dependencies and build the project
       - run: npm ci && npm run build
+
+      # Deploy to Firebase Hosting
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
