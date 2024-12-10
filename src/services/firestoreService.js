@@ -1,100 +1,59 @@
 
 // src/services/firestoreService.js
-import { collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, doc, setDoc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-// Add a document to a collection
-export const addDocument = async (collectionName, data) => {
+export const addStockData = async (ticker, date, closePrice, collectionName) => {
   try {
-    const docRef = await addDoc(collection(db, collectionName), data);
-    console.log("Document written with ID: ", docRef.id);
-    return docRef.id;
-  } catch (e) {
-    console.error("Error adding document: ", e);
-    throw e;
-  }
-};
-
-// Get all documents from a collection
-// export const getAllDocuments = async (collectionName) => {
-//   try {
-//     const querySnapshot = await getDocs(collection(db, collectionName));
-//     return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-//   } catch (e) {
-//     console.error("Error fetching documents: ", e);
-//     throw e;
-//   }
-// };
-export const getAllDocuments = async (collectionName) => {
-  try {
-    const querySnapshot = await getDocs(collection(db, collectionName));
-    const documents = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-
-    // Log each document to the console
-    documents.forEach((doc) => console.log(doc));
-
-    return documents; // Still returns the data if needed
-  } catch (e) {
-    console.error("Error fetching documents: ", e);
-    throw e;
-  }
-};
-
-// Get a single document by ID
-export const getDocumentById = async (collectionName, docId) => {
-  try {
-    const docRef = doc(db, collectionName, docId);
+    const docRef = doc(db, collectionName, ticker);
     const docSnap = await getDoc(docRef);
+
+    let existingData = {};
     if (docSnap.exists()) {
-      return { id: docSnap.id, ...docSnap.data() };
-    } else {
-      console.log("No such document!");
-      return null;
+      existingData = docSnap.data();
     }
-  } catch (e) {
-    console.error("Error fetching document: ", e);
-    throw e;
+
+    // Ensure Prices is an array
+    const prices = Array.isArray(existingData.Prices) ? existingData.Prices : [];
+
+    // Add the new price
+    if (date && closePrice !== undefined) {
+      prices.push({ [date]: closePrice });
+    } else {
+      throw new Error(`Invalid data: date=${date}, closePrice=${closePrice}`);
+    }
+
+    if (!docSnap.exists()) {
+      await setDoc(docRef, {
+        Ticker: ticker,
+        Prices: prices,
+      });
+      console.log(`Created new document for ${ticker}`);
+    } else {
+      // If the document exists, update it
+      await updateDoc(docRef, {
+        Prices: prices,
+      });
+      console.log(`Updated existing document for ${ticker}`);
+    }
+    console.log(`Successfully added data for ${ticker} on ${date}: ${closePrice}`);
+  } catch (error) {
+    console.error("Error adding stock data: ", error);
+    throw error;
   }
 };
 
-// Update a document
-export const updateDocument = async (collectionName, docId, updatedData) => {
-  try {
-    const docRef = doc(db, collectionName, docId);
-    await updateDoc(docRef, updatedData);
-    console.log("Document updated successfully");
-  } catch (e) {
-    console.error("Error updating document: ", e);
-    throw e;
-  }
-};
+// const testAddStockData = async () => {
+//   const ticker = 'FAKE';
+//   const date = '2024-12-01';
+//   const closePrice = 124.21;
 
-// Delete a document
-export const deleteDocument = async (collectionName, docId) => {
-  try {
-    const docRef = doc(db, collectionName, docId);
-    await deleteDoc(docRef);
-    console.log("Document deleted successfully");
-  } catch (e) {
-    console.error("Error deleting document: ", e);
-    throw e;
-  }
-};
+//   await addStockData(ticker, date, closePrice);
 
-getAllDocuments('users');
-
-// const fetchData = async () => {
-//   try {
-//     const querySnapshot = await getDocs(collection(db, 'users'));
-//     querySnapshot.forEach((doc) => {
-//       console.log(doc.id, '=>', doc.data());
-//     });
-//   } catch (error) {
-//     console.error("Error fetching data: ", error);
-//   }
+//   // Test adding another date
+//   const newDate = '2024-12-02';
+//   const newClosePrice = 126.45;
+//   await addStockData(ticker, newDate, newClosePrice);
 // };
-
-// // Call the function to fetch and print data
-// fetchData();

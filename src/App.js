@@ -11,8 +11,7 @@ import {
   CardContent,
   Grid,
 } from "@mui/material";
-
-//import Graph from './components/Graph';
+import Graph from './components/Graph.js';
 
 const initialStocks = [
   { name: "Stock A", price: 100, symbol: "A" },
@@ -28,34 +27,34 @@ function App() {
   const [portfolio, setPortfolio] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   //for graph:
-  //const [chartData, setChartData] = useState([]);
+  const [chartData, setChartData] = useState([]);
 
   //for graph:
-  //   useEffect(() => {
-  //     // Fetch data from the API
-  //     async function fetchData() {
-  //         try {
-  //             const response = await fetch(
-  //                 `https://api.polygon.io/v1/open-close/AAPL/2023-01-09?adjusted=true&apiKey=YOUR_API_KEY`
-  //             );
-  //             const data = await response.json();
+  useEffect(() => {
+    // Fetch data from the API
+    async function fetchData() {
+      try {
+        const response = await fetch(
+          `https://api.polygon.io/v1/open-close/AAPL/2023-01-09?adjusted=true&apiKey=YOUR_API_KEY`
+        );
+        const data = await response.json();
 
-  //             // Format the response to match the graph's expected data structure
-  //             const formattedData = [
-  //                 {
-  //                     date: data.from, // Use the `from` field as the date
-  //                     close: data.close, // Use the `close` value
-  //                 },
-  //             ];
+        // Format the response to match the graph's expected data structure
+        const formattedData = [
+          {
+            date: data.from, // Use the `from` field as the date
+            close: data.close, // Use the `close` value
+          },
+        ];
 
-  //             setChartData(formattedData);
-  //         } catch (error) {
-  //             console.error('Error fetching data:', error);
-  //         }
-  //     }
+        setChartData(formattedData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
 
-  //     fetchData();
-  // }, []);
+    fetchData();
+  }, []);
 
   // Simulate stock price changes every 3 seconds
   useEffect(() => {
@@ -274,14 +273,14 @@ function App() {
           </List>
         </Grid>
       </Grid>
-      {/* <div>
-            <h1>Closing Prices</h1>
-            {chartData.length > 0 ? (
-                <Graph data={chartData} />
-            ) : (
-                <p>Loading...</p>
-            )}
-        </div> */}
+      <div>
+        <h1>Closing Prices</h1>
+        {chartData.length > 0 ? (
+          <Graph data={chartData} />
+        ) : (
+          <p>Loading...</p>
+        )}
+      </div>
     </Container>
   );
 }
