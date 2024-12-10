@@ -28,7 +28,7 @@ function App() {
   const [portfolio, setPortfolio] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   //for graph:
-  const [chartData, setChartData] = useState([]);
+  //const [chartData, setChartData] = useState([]);
 
   //for graph:
   useEffect(() => {
