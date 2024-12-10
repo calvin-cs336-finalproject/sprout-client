@@ -17,9 +17,9 @@ import { getAllStockData } from "./services/firestoreService.js";
 function App() {
   const [stocks, setStocks] = useState([]);
   const [selectedStock, setSelectedStock] = useState(null);
+  const [searchTerm, setSearchTerm] = useState(''); // Added state for search
   const [userBalance, setUserBalance] = useState(10000); // Default balance
   const [portfolio, setPortfolio] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     async function fetchStocks() {
@@ -38,39 +38,37 @@ function App() {
     const interval = setInterval(() => {
       setStocks((prevStocks) =>
         prevStocks.map((stock) => {
-          const newPrice = Math.max(1, stock.price + (Math.random() - 0.5) * 10);
-          return { ...stock, price: newPrice.toFixed(2) }; // Update stock price
+          const latestPrice = stock.Prices[stock.Prices.length - 1];
+          if (latestPrice) {
+            // Get the most recent price and modify it
+            const latestPriceValue = Object.values(latestPrice)[0];
+            const newPrice = Math.max(1, latestPriceValue + (Math.random() - 0.5) * 10);
+            return { ...stock, price: newPrice.toFixed(2) }; // Update stock price
+          }
+          return stock;
         })
       );
     }, 3000);
     return () => clearInterval(interval);
   }, []);
 
-  // Update the selected stock dynamically when prices change
-  useEffect(() => {
-    if (selectedStock) {
-      const updatedStock = stocks.find(
-        (stock) => stock.name === selectedStock.name
-      );
-      if (updatedStock) setSelectedStock(updatedStock);
-    }
-  }, [stocks]);
-
   const handleBuyStock = () => {
     if (!selectedStock) return;
-    if (userBalance >= selectedStock.price) {
-      setUserBalance((prevBalance) => prevBalance - selectedStock.price);
+    const latestPrice = selectedStock.Prices[selectedStock.Prices.length - 1];
+    const price = latestPrice ? Object.values(latestPrice)[0] : 0;
+    if (userBalance >= price) {
+      setUserBalance((prevBalance) => prevBalance - price);
       setPortfolio((prev) => {
-        const existingStock = prev.find((item) => item.name === selectedStock.name);
+        const existingStock = prev.find((item) => item.Ticker === selectedStock.Ticker);
         if (existingStock) {
           return prev.map((item) =>
-            item.name === selectedStock.name
+            item.Ticker === selectedStock.Ticker
               ? {
                   ...item,
                   quantity: item.quantity + 1,
-                  totalInvested: item.totalInvested + selectedStock.price,
+                  totalInvested: item.totalInvested + price,
                   averagePrice:
-                    (item.totalInvested + selectedStock.price) /
+                    (item.totalInvested + price) /
                     (item.quantity + 1),
                 }
               : item
@@ -81,8 +79,8 @@ function App() {
           {
             ...selectedStock,
             quantity: 1,
-            totalInvested: selectedStock.price,
-            averagePrice: selectedStock.price,
+            totalInvested: price,
+            averagePrice: price,
           },
         ];
       });
@@ -92,17 +90,17 @@ function App() {
   };
 
   const handleSellStock = (stockToSell) => {
-    const currentStock = stocks.find((s) => s.name === stockToSell.name);
+    const currentStock = stocks.find((s) => s.Ticker === stockToSell.Ticker);
     if (!currentStock) return;
 
     if (stockToSell.quantity > 0) {
-      const currentPrice = currentStock.price;
+      const currentPrice = Object.values(currentStock.Prices[currentStock.Prices.length - 1])[0];
 
       setUserBalance((prevBalance) => prevBalance + currentPrice);
       setPortfolio((prev) =>
         prev
           .map((item) =>
-            item.name === stockToSell.name
+            item.Ticker === stockToSell.Ticker
               ? {
                   ...item,
                   quantity: item.quantity - 1,
@@ -140,47 +138,52 @@ function App() {
             label="Search Stocks"
             variant="outlined"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => setSearchTerm(e.target.value)} // Handle search input change
             margin="normal"
           />
           <List>
             {stocks
               .filter((stock) =>
-                stock.name?.toLowerCase().includes(searchTerm.toLowerCase())
+                stock.Ticker?.toLowerCase().includes(searchTerm.toLowerCase())
               )
-              .map((stock, index) => (
-                <ListItem
-                  key={index}
-                  button
-                  onClick={() => setSelectedStock(stock)}
-                  selected={selectedStock?.name === stock.name}
-                  style={{
-                    border: "1px solid #ddd",
-                    marginBottom: "0.5rem",
-                    borderRadius: "5px",
-                  }}
-                >
-                  <Box>
-                    <Typography variant="subtitle1">{stock.name}</Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      Price: ${parseFloat(stock.price).toFixed(2)}
-                    </Typography>
-                  </Box>
-                </ListItem>
-              ))}
+              .map((stock, index) => {
+                const latestPriceObj = stock.Prices[stock.Prices.length - 1];
+                const latestPriceValue = latestPriceObj
+                  ? Object.values(latestPriceObj)[0]
+                  : 'N/A';
+                return (
+                  <ListItem
+                    key={index}
+                    button
+                    onClick={() => setSelectedStock(stock)}
+                    selected={selectedStock?.Ticker === stock.Ticker}
+                    style={{
+                      border: "1px solid #ddd",
+                      marginBottom: "0.5rem",
+                      borderRadius: "5px",
+                    }}
+                  >
+                    <Box>
+                      <Typography variant="subtitle1">{stock.Ticker}</Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        Price: ${latestPriceValue !== 'N/A' ? parseFloat(latestPriceValue).toFixed(2) : 'N/A'}
+                      </Typography>
+                    </Box>
+                  </ListItem>
+                );
+              })}
           </List>
         </Grid>
-
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={6.2}>
           <Typography variant="h5" gutterBottom>
             Selected Stock
           </Typography>
           {selectedStock ? (
             <Card>
               <CardContent>
-                <Typography variant="h6">{selectedStock.name}</Typography>
+                <Typography variant="h6">{selectedStock.Ticker}</Typography>
                 <Typography variant="body1">
-                  Current Price: ${parseFloat(selectedStock.price).toFixed(2)}
+                  Price: ${parseFloat(Object.values(selectedStock.Prices[selectedStock.Prices.length - 1])[0]).toFixed(2)}
                 </Typography>
                 <Button
                   variant="contained"
@@ -192,6 +195,10 @@ function App() {
                   Buy Stock
                 </Button>
               </CardContent>
+              <div>
+                <h1>Stock Price Graph</h1>
+                <GraphContainer ticker={selectedStock.Ticker} />
+              </div>
             </Card>
           ) : (
             <Typography variant="body1" color="textSecondary">
@@ -199,14 +206,14 @@ function App() {
             </Typography>
           )}
         </Grid>
-
         <Grid item xs={12} md={4}>
           <Typography variant="h5" gutterBottom>
             Portfolio
           </Typography>
           <List>
             {portfolio.map((stock, index) => {
-              const currentStock = stocks.find((s) => s.name === stock.name);
+              const currentStock = stocks.find((s) => s.Ticker === stock.Ticker);
+              const currentPrice = currentStock ? Object.values(currentStock.Prices[currentStock.Prices.length - 1])[0] : 0;
               return (
                 <ListItem
                   key={index}
@@ -218,18 +225,14 @@ function App() {
                 >
                   <Box>
                     <Typography variant="subtitle1">
-                      {stock.name} - {stock.quantity} shares
+                      {stock.Ticker} - {stock.quantity} shares
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
-                      Current Price: ${parseFloat(currentStock?.price || stock.price).toFixed(2)}
+                      Current Price: ${parseFloat(currentPrice).toFixed(2)}
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
                       Change:{" "}
-                      {calculatePercentageChange(
-                        parseFloat(currentStock?.price || stock.price),
-                        stock.averagePrice
-                      ).toFixed(2)}
-                      %
+                      {calculatePercentageChange(currentPrice, stock.averagePrice).toFixed(2)}%
                     </Typography>
                     <Button
                       variant="outlined"
@@ -247,10 +250,6 @@ function App() {
           </List>
         </Grid>
       </Grid>
-      <div>
-        <h1>Stock Price Graph</h1>
-        <GraphContainer ticker="AAPL" />
-      </div>
     </Container>
   );
 }

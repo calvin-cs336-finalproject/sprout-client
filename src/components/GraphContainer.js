@@ -17,9 +17,8 @@ const GraphContainer = ({ ticker, collectionName = "stocks" }) => {
                     // Convert Firestore data into usable format
                     const parsedData = rawData.map((item) => {
                         const [date, closePrice] = Object.entries(item)[0];
-                        return { date, close: closePrice };
+                        return { date: date, close: closePrice };
                     });
-
                     setData(parsedData);
                 } else {
                     console.warn(`No document found for ticker: ${ticker}`);
@@ -44,3 +43,4 @@ const GraphContainer = ({ ticker, collectionName = "stocks" }) => {
 };
 
 export default GraphContainer;
+

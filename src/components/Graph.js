@@ -5,7 +5,7 @@ import { AxisBottom, AxisLeft } from "@visx/axis";
 import { Group } from "@visx/group";
 import { curveMonotoneX } from "@visx/curve";
 
-const Graph = ({ data, width = 800, height = 400 }) => {
+const Graph = ({ data, width = 600, height = 300 }) => {
     const margin = { top: 20, right: 30, bottom: 50, left: 50 };
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
