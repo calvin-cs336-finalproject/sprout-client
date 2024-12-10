@@ -1,14 +1,24 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from 'firebase/firestore';
+import {
+    FIREBASE_API_KEY,
+    FIREBASE_AUTH_DOMAIN,
+    FIREBASE_PROJECT_ID,
+    FIREBASE_STORAGE_BUCKET,
+    FIREBASE_MESSAGING_SENDER_ID,
+    FIREBASE_APP_ID,
+} from './credentials.js'
+
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBNKgD1v-61xgXexOPEAVzrucHO16AZxJE",
-    authDomain: "cs336-stock-market-project.firebaseapp.com",
-    projectId: "cs336-stock-market-project",
-    storageBucket: "cs336-stock-market-project.firebasestorage.app",
-    messagingSenderId: "1054566863429",
-    appId: "1:1054566863429:web:0a081af1f2d51b685a092c"
+    apiKey: FIREBASE_API_KEY,
+    authDomain: FIREBASE_AUTH_DOMAIN,
+    projectId: FIREBASE_PROJECT_ID,
+    storageBucket: FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
+    appId: FIREBASE_APP_ID,
 };
+
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
