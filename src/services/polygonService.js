@@ -3,6 +3,7 @@ import { addStockData } from './firestoreService.js';
 import { POLYGON_API_KEY } from '../credentials.js';
 
 const apiKey = POLYGON_API_KEY;
+let data;
 
 const fetchOneSetOfDataFromAPI = async (ticker, date) => {
     const url = 'https://api.polygon.io/v1/open-close/' + ticker + '/' + date + '?adjusted=true&apiKey=' + apiKey;
@@ -16,9 +17,6 @@ const fetchOneSetOfDataFromAPI = async (ticker, date) => {
         return null;
     }
 };
-
-
-let data;
 
 const fetchDataFromAPI = async (ticker, date) => {
     const url = 'https://api.polygon.io/v1/open-close/' + ticker + '/' + date + '?adjusted=true&apiKey=' + apiKey;
