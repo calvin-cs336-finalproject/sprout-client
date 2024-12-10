@@ -1,9 +1,9 @@
 
 // src/services/firestoreService.js
-import { collection, addDoc, getDocs, doc, setDoc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs, doc, setDoc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase.js';
-import dotenv from 'dotenv';
-dotenv.config();
+//import dotenv from 'dotenv';
+//dotenv.config();
 
 export const addStockData = async (ticker, date, closePrice, collectionName) => {
   try {
@@ -45,15 +45,25 @@ export const addStockData = async (ticker, date, closePrice, collectionName) => 
   }
 };
 
-// const testAddStockData = async () => {
-//   const ticker = 'FAKE';
-//   const date = '2024-12-01';
-//   const closePrice = 124.21;
 
-//   await addStockData(ticker, date, closePrice);
+export const getStockData = async (ticker, collectionName) => {
+  const docRef = doc(db, collectionName, ticker);
+  const docSnap = await getDoc(docRef);
 
-//   // Test adding another date
-//   const newDate = '2024-12-02';
-//   const newClosePrice = 126.45;
-//   await addStockData(ticker, newDate, newClosePrice);
-// };
+  if (docSnap.exists()) {
+    return docSnap.data();
+  } else {
+    throw new Error(`No document found for ticker: ${ticker}`);
+  }
+};
+
+export const subscribeToStockData = (ticker, collectionName, callback) => {
+  const docRef = doc(db, collectionName, ticker);
+  return onSnapshot(docRef, (docSnap) => {
+    if (docSnap.exists()) {
+      callback(docSnap.data());
+    } else {
+      console.warn(`No document found for ticker: ${ticker}`);
+    }
+  });
+};

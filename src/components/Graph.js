@@ -1,9 +1,9 @@
 import React from "react";
-import { LinePath } from '@visx/shape';
-import { scaleTime, scaleLinear } from '@visx/scale';
-import { AxisBottom, AxisLeft } from '@visx/axis';
-import { Group } from '@visx/group';
-import { curveMonotoneX } from '@visx/curve';
+import { LinePath } from "@visx/shape";
+import { scaleTime, scaleLinear } from "@visx/scale";
+import { AxisBottom, AxisLeft } from "@visx/axis";
+import { Group } from "@visx/group";
+import { curveMonotoneX } from "@visx/curve";
 
 const Graph = ({ data, width = 800, height = 400 }) => {
     const margin = { top: 20, right: 30, bottom: 50, left: 50 };

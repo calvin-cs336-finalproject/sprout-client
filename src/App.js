@@ -11,7 +11,8 @@ import {
   CardContent,
   Grid,
 } from "@mui/material";
-import Graph from './components/Graph.js';
+//import Graph from './components/Graph.js';
+import GraphContainer from "./components/GraphContainer.js";
 
 const initialStocks = [
   { name: "Stock A", price: 100, symbol: "A" },
@@ -274,12 +275,8 @@ function App() {
         </Grid>
       </Grid>
       <div>
-        <h1>Closing Prices</h1>
-        {chartData.length > 0 ? (
-          <Graph data={chartData} />
-        ) : (
-          <p>Loading...</p>
-        )}
+        <h1>Stock Price Graph</h1>
+        <GraphContainer ticker="AAPL" />
       </div>
     </Container>
   );

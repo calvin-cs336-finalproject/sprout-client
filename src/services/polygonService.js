@@ -1,9 +1,8 @@
 import fetch from 'node-fetch';
-import dotenv from 'dotenv';
-dotenv.config();
+//import dotenv from 'dotenv';
 import { addStockData } from './firestoreService.js';
-
-const apiKey = process.env.REACT_APP_WEB_API_KEY;
+//dotenv.config();
+//const apiKey = process.env.REACT_APP_WEB_API_KEY;
 
 const fetchOneSetOfDataFromAPI = async (ticker, date) => {
     const url = 'https://api.polygon.io/v1/open-close/' + ticker + '/' + date + '?adjusted=true&apiKey=' + apiKey;
@@ -94,8 +93,6 @@ const fetchDataOfAllCompanies = async (startDate, endDate) => {
     }
 };
 
-
-
 //fetchAndStoreData('AMZN', '2024-11-06', '2024-12-06');
 //fetchOneSetOfDataFromAPI('BRK.B', '2024-11-06');
-fetchDataOfAllCompanies('2024-11-06', '2024-12-06');
+//fetchDataOfAllCompanies('2024-11-06', '2024-12-06');
