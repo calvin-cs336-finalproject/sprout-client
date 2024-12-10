@@ -2,8 +2,7 @@
 // src/services/firestoreService.js
 import { collection, addDoc, getDocs, doc, setDoc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase.js';
-//import dotenv from 'dotenv';
-//dotenv.config();
+
 
 export const addStockData = async (ticker, date, closePrice, collectionName) => {
   try {

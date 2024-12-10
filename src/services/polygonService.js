@@ -1,8 +1,8 @@
 import fetch from 'node-fetch';
-//import dotenv from 'dotenv';
 import { addStockData } from './firestoreService.js';
-//dotenv.config();
-//const apiKey = process.env.REACT_APP_WEB_API_KEY;
+import { POLYGON_API_KEY } from '../credentials.js';
+
+const apiKey = POLYGON_API_KEY;
 
 const fetchOneSetOfDataFromAPI = async (ticker, date) => {
     const url = 'https://api.polygon.io/v1/open-close/' + ticker + '/' + date + '?adjusted=true&apiKey=' + apiKey;
