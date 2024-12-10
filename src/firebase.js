@@ -9,7 +9,6 @@ import {
     FIREBASE_APP_ID,
 } from './credentials.js'
 
-
 const firebaseConfig = {
     apiKey: FIREBASE_API_KEY,
     authDomain: FIREBASE_AUTH_DOMAIN,

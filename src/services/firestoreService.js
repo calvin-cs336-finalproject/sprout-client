@@ -44,7 +44,6 @@ export const addStockData = async (ticker, date, closePrice, collectionName) => 
   }
 };
 
-
 export const getStockData = async (ticker, collectionName) => {
   const docRef = doc(db, collectionName, ticker);
   const docSnap = await getDoc(docRef);
