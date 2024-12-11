@@ -1,5 +1,5 @@
 
-import { collection, getDocs, doc, setDoc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { collection, getDocs, doc, setDoc, getDoc, updateDoc, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 import { db } from '../firebase.js';
 
 export const addStockData = async (ticker, date, closePrice, collectionName) => {
@@ -100,11 +100,12 @@ export const getAllUsers = async () => {
   }
 };
 
-export const createUserWithBalance = async (userId, email, initialBalance = 10000) => {
+export const createUserWithBalance = async (userId, email, username, initialBalance = 10000) => {
   try {
     const userDocRef = doc(db, "users", userId);
     await setDoc(userDocRef, {
       email: email,
+      username: username,
       balance: initialBalance,
     });
     console.log("User created with initial balance:", initialBalance);
@@ -151,6 +152,24 @@ export const updateUserBalance = async (userId, newBalance) => {
     }
   } catch (error) {
     console.error("Error updating user balance:", error);
+    throw error;
+  }
+};
+
+export const getTopUsersByBalance = async () => {
+  try {
+    const usersRef = collection(db, 'users');
+    const topUsersQuery = query(usersRef, orderBy('balance', 'desc'), limit(10));
+    const querySnapshot = await getDocs(topUsersQuery);
+
+    const topUsers = [];
+    querySnapshot.forEach((doc) => {
+      topUsers.push({ id: doc.id, ...doc.data() });
+    });
+
+    return topUsers;
+  } catch (error) {
+    console.error('Error fetching top users by balance: ', error);
     throw error;
   }
 };

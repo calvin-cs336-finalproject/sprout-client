@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Container, Grid2, Typography } from "@mui/material";
-import { getAllStockData, getUserData, updateUserBalance } from "../services/firestoreService.js";
 import { useNavigate } from "react-router-dom";
+
+import { getAllStockData, getUserData, updateUserBalance } from "../services/firestoreService.js";
 import { auth } from "../firebase.js";
 import { onAuthStateChanged } from "firebase/auth";
 
 import SelectedStock from "../components/SelectedStock.js";
 import Portfolio from "../components/Portfolio.js";
 import Stocks from "../components/Stocks.js";
+import Leaderboard from "../components/Leaderboard.js";
 
 function MainPage() {
   const [stocks, setStocks] = useState([]);
@@ -133,6 +135,7 @@ function MainPage() {
         <Stocks stocks={stocks} setSelectedStock={setSelectedStock} selectedStock={selectedStock}/>
         <SelectedStock selectedStock={selectedStock} handleBuyStock={handleBuyStock}/>
         <Portfolio stocks={stocks} portfolio={portfolio} handleBuyStock={handleBuyStock} handleSellStock={handleSellStock}/>
+        <Leaderboard/>
       </Grid2>
     </Container>
   );
