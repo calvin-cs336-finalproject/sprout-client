@@ -81,3 +81,76 @@ export const subscribeToStockData = (ticker, collectionName, callback) => {
     }
   });
 };
+
+export const getAllUsers = async () => {
+  try {
+    const usersCollectionRef = collection(db, "users");
+    const querySnapshot = await getDocs(usersCollectionRef);
+
+    const users = [];
+    querySnapshot.forEach((doc) => {
+      users.push({ id: doc.id, ...doc.data() });
+    });
+
+    console.log("Successfully fetched all user data.");
+    return users;
+  } catch (error) {
+    console.error("Error fetching users: ", error);
+    throw error;
+  }
+};
+
+export const createUserWithBalance = async (userId, email, initialBalance = 10000) => {
+  try {
+    const userDocRef = doc(db, "users", userId);
+    await setDoc(userDocRef, {
+      email: email,
+      balance: initialBalance,
+    });
+    console.log("User created with initial balance:", initialBalance);
+  } catch (error) {
+    console.error("Error creating user:", error);
+    throw error;
+  }
+};
+
+// Function to fetch user data by user ID
+export const getUserData = async (userId) => {
+  try {
+    const userDocRef = doc(db, "users", userId);
+    const userDocSnap = await getDoc(userDocRef);
+
+    if (userDocSnap.exists()) {
+      return userDocSnap.data();
+    } else {
+      throw new Error("No user data found for ID:", userId);
+    }
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    throw error;
+  }
+};
+
+export const updateUserBalance = async (userId, newBalance) => {
+  try {
+    // Reference to the user's document
+    const userDocRef = doc(db, "users", userId);
+    
+    // Fetch the user document
+    const userDocSnap = await getDoc(userDocRef);
+
+    if (userDocSnap.exists()) {
+      // Update the user's balance
+      await updateDoc(userDocRef, {
+        balance: newBalance,
+      });
+      
+      console.log(`User balance updated to: ${newBalance}`);
+    } else {
+      console.error("User not found");
+    }
+  } catch (error) {
+    console.error("Error updating user balance:", error);
+    throw error;
+  }
+};
