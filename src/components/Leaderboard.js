@@ -20,25 +20,20 @@ function Leaderboard() {
 
   return (
     <Grid2 item xs={12} md={4}>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h5">
         Leaderboard
       </Typography>
       <List>
         {topUsers.map((user, index) => (
           <ListItem
             key={user.id}
-            style={{
-              border: '1px solid #ddd',
-              marginBottom: '0.5rem',
-              borderRadius: '5px',
-            }}
           >
             <Box>
               <Typography variant="subtitle1">
-                #{index + 1}: {user.username || 'Anonymous'}
+                {index + 1}. {user.username || 'Anonymous'}: ${user.balance?.toFixed(2) || '0.00'}
               </Typography>
               <Typography variant="body2" color="textSecondary">
-                Balance: ${user.balance?.toFixed(2) || '0.00'}
+                
               </Typography>
             </Box>
           </ListItem>
