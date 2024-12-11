@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // For routing
+import { useNavigate } from "react-router-dom";
 import { TextField, Button, Typography, Box } from "@mui/material";
-import { auth } from "../firebase.js"; // Import your configured Firebase instance
+
+import { auth } from "../firebase.js";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { createUserWithBalance } from "../services/firestoreService.js";
 
 const AuthPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState(""); // New state for username
   const [isSignUp, setIsSignUp] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -15,11 +17,16 @@ const AuthPage = () => {
   const handleAuth = async () => {
     try {
       if (isSignUp) {
+        if (!username) {
+          setError("Username is required for sign-up.");
+          return;
+        }
+
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Add user to Firestore with initial balance
-        await createUserWithBalance(user.uid, user.email);
+        // Add user to Firestore with initial balance and username
+        await createUserWithBalance(user.uid, user.email, username);
       } else {
         await signInWithEmailAndPassword(auth, email, password);
       }
@@ -35,6 +42,15 @@ const AuthPage = () => {
       <Typography variant="h4" gutterBottom>
         {isSignUp ? "Sign Up" : "Sign In"}
       </Typography>
+      {isSignUp && ( // Only show username field for sign-up
+        <TextField
+          label="Username"
+          variant="outlined"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          style={{ marginBottom: "1rem", width: "300px" }}
+        />
+      )}
       <TextField
         label="Email"
         variant="outlined"
@@ -66,6 +82,6 @@ const AuthPage = () => {
       </Button>
     </Box>
   );
-}
+};
 
 export default AuthPage;
