@@ -37,6 +37,12 @@ const AuthPage = () => {
     }
   };
 
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      handleAuth();
+    }
+  };
+
   return (
     <Box display="flex" flexDirection="column" alignItems="center" mt={5}>
       <Typography variant="h4" gutterBottom>
@@ -49,6 +55,7 @@ const AuthPage = () => {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           style={{ marginBottom: "1rem", width: "300px" }}
+          onKeyDown={handleKeyPress}
         />
       )}
       <TextField
@@ -58,6 +65,7 @@ const AuthPage = () => {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         style={{ marginBottom: "1rem", width: "300px" }}
+        onKeyDown={handleKeyPress}
       />
       <TextField
         label="Password"
@@ -66,6 +74,7 @@ const AuthPage = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         style={{ marginBottom: "1rem", width: "300px" }}
+        onKeyDown={handleKeyPress}
       />
       {error && (
         <Typography color="error" style={{ marginBottom: "1rem" }}>

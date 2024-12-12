@@ -1,5 +1,6 @@
 import React from "react";
 import { Grid2, Typography, List, ListItem, Box, Button } from "@mui/material";
+import { SportsHockeyOutlined } from "@mui/icons-material";
 
 function Portfolio({ stocks, portfolio, handleBuyStock, handleSellStock }) {
 
@@ -41,7 +42,7 @@ function Portfolio({ stocks, portfolio, handleBuyStock, handleSellStock }) {
                 <Button
                   variant="outlined"
                   size="small"
-                  onClick={() => handleBuyStock(stock)}
+                  onClick={() => handleBuyStock(currentStock)}
                   style={{ marginTop: "0.5rem" }}
                 >
                   Buy
