@@ -18,6 +18,8 @@ function Leaderboard() {
     fetchTopUsers();
   }, []);
 
+  console.log(topUsers);
+
   return (
     <Grid2 item xs={12} md={4}>
       <Typography variant="h5">

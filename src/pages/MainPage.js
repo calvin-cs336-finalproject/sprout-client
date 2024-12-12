@@ -11,11 +11,13 @@ import Portfolio from "../components/Portfolio.js";
 import Stocks from "../components/Stocks.js";
 import Leaderboard from "../components/Leaderboard.js";
 import Wishlist from "../components/Wishlist.js";
+import ProfileDropdown from "../components/Profile.js";
 
 function MainPage() {
   const [stocks, setStocks] = useState([]);
   const [selectedStock, setSelectedStock] = useState(null);
   const [userBalance, setUserBalance] = useState(10000); // Default balance
+  const [username, setUsername] = useState('');
   const [wishlist, setWishlist] = useState([]);
   const [portfolio, setPortfolio] = useState([]);
   const [user, setUser] = useState(null);
@@ -39,7 +41,9 @@ function MainPage() {
         setUser(currentUser);
         try {
           const userData = await getUserData(currentUser.uid);
+          console.log("User Data:", userData);
           setUserBalance(userData.balance);
+          setUsername(userData.username);
 
           const profile = await getUserPortfolio(currentUser.uid);
           setPortfolio(profile);
@@ -57,48 +61,57 @@ function MainPage() {
     return () => unsubscribe();
   }, [navigate]);
 
-  const handleBuyStock = async () => {
-    if (!selectedStock) return;
+
+  const handleBuyStock = async (currentStock) => {
+    if (!currentStock || !currentStock.Prices || currentStock.Prices.length === 0) {
+      console.error("Invalid stock data or missing prices for the stock:", currentStock);
+      return; // Return early if stock data or prices are invalid
+    }
   
-    const latestPrice = selectedStock.Prices[selectedStock.Prices.length - 1];
+    // Get the latest price for the selected stock
+    const latestPrice = currentStock.Prices[currentStock.Prices.length - 1];  // Safe access
     const price = latestPrice ? Object.values(latestPrice)[0] : 0;
   
+    // Check if the user has enough balance to buy the stock
     if (userBalance >= price) {
       const newBalance = userBalance - price;
       setUserBalance(newBalance);
       updateUserBalance(user.uid, newBalance);
   
       setPortfolio((prev) => {
-        const existingStock = prev.find((item) => item.Ticker === selectedStock.Ticker);
+        // Check if the stock already exists in the portfolio
+        const stockIndex = prev.findIndex(item => item.Ticker === currentStock.Ticker);
+        
         let updatedPortfolio;
   
-        if (existingStock) {
-          updatedPortfolio = prev.map((item) =>
-            item.Ticker === selectedStock.Ticker
+        if (stockIndex !== -1) {
+          // If the stock exists, update the stock
+          updatedPortfolio = prev.map((item, index) =>
+            index === stockIndex
               ? {
                   ...item,
-                  quantity: item.quantity + 1,
-                  totalInvested: item.totalInvested + price,
-                  averagePrice:
-                    (item.totalInvested + price) / (item.quantity + 1),
+                  quantity: item.quantity + 1, // Increase quantity by 1
+                  totalInvested: item.totalInvested + price, // Update total invested
+                  averagePrice: (item.totalInvested + price) / (item.quantity + 1), // Update average price
                 }
               : item
           );
         } else {
+          // If the stock does not exist, add it to the portfolio
           updatedPortfolio = [
             ...prev,
             {
-              ...selectedStock,
-              quantity: 1,
-              totalInvested: price,
-              averagePrice: price,
-            },
+              Ticker: currentStock.Ticker,
+              quantity: 1,  // New stock, so quantity starts at 1
+              totalInvested: price,  // Total invested is the price of the stock
+              averagePrice: price,  // Average price is the price of the stock
+            }
           ];
         }
   
         // Update Firestore portfolio with required fields
         const updatedStock = updatedPortfolio.find(
-          (item) => item.Ticker === selectedStock.Ticker
+          (item) => item.Ticker === currentStock.Ticker
         );
         if (updatedStock) {
           const currentPrice = price;
@@ -109,6 +122,7 @@ function MainPage() {
             percentChange,
           }, "buy");
         }
+  
         return updatedPortfolio;
       });
     } else {
@@ -116,8 +130,11 @@ function MainPage() {
     }
   };
   
+  
+  
   const handleSellStock = async (stockToSell) => {
     const currentStock = stocks.find((s) => s.Ticker === stockToSell.Ticker);
+    console.log("Current Stock:", stockToSell);
     if (!currentStock) return;
   
     if (stockToSell.quantity > 0) {
@@ -173,10 +190,10 @@ function MainPage() {
       }
   
       // Call the addToWishlist function from firestoreService to add the stock to the wishlist
-      await addToWishlist(user.uid, stock);
-  
-      // Update the wishlist state by adding the newly added stock
-      setWishlist((prevWishlist) => [...prevWishlist, stock]);
+      await addToWishlist(user.uid, stock); // Firestore update
+
+      const watchlist = await getWishlist(user.uid);
+      setWishlist(watchlist);
   
       console.log(`${stock.Ticker} added to wishlist`);
     } catch (error) {
@@ -192,11 +209,11 @@ function MainPage() {
       // Call the deleteFromWishlist function with the userId and stock ticker
       await deleteFromWishlist(user.uid, stockTicker);
   
-      // Update the wishlist state by filtering out the removed stock
-      setWishlist((prevWishlist) =>
-        prevWishlist.filter((stock) => stock.Ticker !== stockTicker)
-      );
+      const watchlist = await getWishlist(user.uid);
+      setWishlist(watchlist);
+
       console.log(`Stock ${stockTicker} removed from wishlist.`);
+      
     } catch (error) {
       console.error("Error removing stock from wishlist:", error);
     }
@@ -218,6 +235,15 @@ function MainPage() {
   };
   
   const overallPerformance = calculateOverallPerformance();
+
+  function handleLogout() {
+    // Clear authentication data (e.g., tokens or user data)
+    localStorage.removeItem("authToken"); // Remove token from localStorage (or sessionStorage, or cookies)
+    sessionStorage.removeItem("userData"); // Clear any session data (if stored here)
+
+    // Redirect to the login page (if using React Router)
+    navigate('/login');
+  }
 
   if (!user) {
     return <p>Loading...</p>;
@@ -256,17 +282,20 @@ function MainPage() {
           setSelectedStock={setSelectedStock}
           selectedStock={selectedStock}
         />
+        
         <SelectedStock
           selectedStock={selectedStock}
           handleBuyStock={handleBuyStock}
           handleAddToWishlist={handleAddToWishlist}
         />
+        
         <Wishlist
           wishlist={wishlist}
           handleRemoveFromWishlist={handleRemoveFromWishlist}
           stocks={stocks}
         />
       </Grid2>
+      <ProfileDropdown username={username} handleLogout={handleLogout} />
     </Grid2>
   </Container>
   

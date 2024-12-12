@@ -24,11 +24,19 @@ function Wishlist({ stocks, wishlist, handleRemoveFromWishlist }) {
             maxWidth: "900px",     // Allow scrolling within the parent container
           }}
         >
-          {wishlist.map((stock, index) => {
-            const currentStock = stocks.find((s) => s.Ticker === stock.Ticker);
-            const currentPrice = currentStock
+          {wishlist.map((ticker, index) => {
+            // Find the full stock object based on ticker
+            const currentStock = stocks.find((s) => s.Ticker === ticker);
+            if (!currentStock) return null; // If stock not found, skip rendering
+
+            // Get the latest price from the stock object
+            const currentPrice = currentStock.Prices.length > 0
               ? Object.values(currentStock.Prices[currentStock.Prices.length - 1])[0]
               : 0;
+            
+            // Get the percent change based on the stock object
+            const percentChange = currentStock.percentChange || 0;
+
             return (
               <Box
                 key={index}
@@ -44,15 +52,15 @@ function Wishlist({ stocks, wishlist, handleRemoveFromWishlist }) {
                 }}
               >
                 <Typography variant="subtitle1">
-                  {stock.Ticker} - ${currentPrice?.toFixed(2)}
+                  {ticker} - ${currentPrice.toFixed(2)}
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
-                  Change: {stock.percentChange?.toFixed(2)}%
+                  Change: {percentChange.toFixed(2)}%
                 </Typography>
                 <Button
                   variant="outlined"
                   size="small"
-                  onClick={() => handleRemoveFromWishlist(stock.Ticker)}
+                  onClick={() => handleRemoveFromWishlist(ticker)}
                   style={{ marginTop: "0.5rem" }}
                 >
                   Remove
