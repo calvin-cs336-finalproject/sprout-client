@@ -1,6 +1,5 @@
 import React from "react";
 import { Grid2, Typography, List, ListItem, Box, Button } from "@mui/material";
-import { SportsHockeyOutlined } from "@mui/icons-material";
 
 function Portfolio({ stocks, portfolio, handleBuyStock, handleSellStock }) {
 

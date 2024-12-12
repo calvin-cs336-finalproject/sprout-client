@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Box, Button, Menu, MenuItem, Typography } from "@mui/material";
+import { AccountCircle } from "@mui/icons-material";
 
 function ProfileDropdown({ username, handleLogout }) {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -18,6 +19,7 @@ function ProfileDropdown({ username, handleLogout }) {
         variant="text"
         color="inherit"
         onClick={handleClick}
+        startIcon={<AccountCircle />}
       >
         <Typography variant="body1" style={{ textTransform: 'none' }}>{username}</Typography>
       </Button>
