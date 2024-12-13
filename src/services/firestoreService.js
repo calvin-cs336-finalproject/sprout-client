@@ -210,6 +210,13 @@ export const addStockData = async (ticker, date, closePrice, collectionName) => 
     // Ensure Prices is an array
     const prices = Array.isArray(existingData.Prices) ? existingData.Prices : [];
 
+    // Check if the date already exists in the Prices array
+    const isDateAlreadyPresent = prices.some((entry) => entry[date] !== undefined);
+    if (isDateAlreadyPresent) {
+      console.log(`Data for ${ticker} on ${date} already exists. Skipping.`);
+      return; // Exit the function to avoid adding duplicate data
+    }
+
     // Add the new price
     if (date && closePrice !== undefined) {
       prices.push({ [date]: closePrice });
@@ -236,7 +243,6 @@ export const addStockData = async (ticker, date, closePrice, collectionName) => 
     throw error;
   }
 };
-
 // Fetch all stock data
 export const getAllStockData = async (collectionName) => {
   try {

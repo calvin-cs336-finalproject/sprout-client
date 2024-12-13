@@ -119,5 +119,5 @@ export const fetchDataOfAllCompaniesForOneDay = async (date) => {
 
 //fetchAndStoreData('AMZN', '2024-11-06', '2024-12-06');
 //fetchOneSetOfDataFromAPI('BRK.B', '2024-11-06');
-fetchDataOfAllCompanies('2024-12-07', '2024-12-11');
+//fetchDataOfAllCompanies('2024-12-07', '2024-12-11');
 //fetchDataOfAllCompaniesForOneDay('2024-12-06');
