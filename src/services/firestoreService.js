@@ -39,7 +39,7 @@ export const getWishlist = async (userId) => {
 
     // Get the wishlist array (defaults to an empty array if not present)
     const wishlist = docSnapshot.data()?.wishlist || [];
-    
+
     console.log(`Successfully fetched wishlist for user: ${userId}`);
     return wishlist;
   } catch (error) {
@@ -256,7 +256,6 @@ export const getAllStockData = async (collectionName) => {
   }
 };
 
-
 export const subscribeToStockData = (ticker, collectionName, callback) => {
   const docRef = doc(db, collectionName, ticker);
   return onSnapshot(docRef, (docSnap) => {
@@ -307,7 +306,7 @@ export const updateUserBalance = async (userId, newBalance) => {
   try {
     // Reference to the user's document
     const userDocRef = doc(db, "users", userId);
-    
+
     // Fetch the user document
     const userDocSnap = await getDoc(userDocRef);
 
@@ -316,7 +315,7 @@ export const updateUserBalance = async (userId, newBalance) => {
       await updateDoc(userDocRef, {
         balance: newBalance,
       });
-      
+
       console.log(`User balance updated to: ${newBalance}`);
     } else {
       console.error("User not found");

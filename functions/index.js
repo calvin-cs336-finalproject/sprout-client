@@ -1,21 +1,31 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * const {onCall} = require("firebase-functions/v2/https");
- * const {onDocumentWritten} = require("firebase-functions/v2/firestore");
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
 
-const { onRequest } = require("firebase-functions/v2/https");
-const logger = require("firebase-functions/logger");
+import { onSchedule } from "firebase-functions/scheduler";
+import { fetchDataOfAllCompaniesForOneDay } from "../src/services/polygonService.js";
 
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
+export const dailyDataFetch = onSchedule("0 13 * * *", async () => {
+    try {
+        // Calculate the date for the previous day
+        const now = new Date();
+        now.setDate(now.getDate() - 1); // Go back one day
+        const previousDate = now.toISOString().split("T")[0]; // Format as YYYY-MM-DD
 
-// exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+        console.log(`Fetching data for ${previousDate}...`);
+        await fetchDataOfAllCompaniesForOneDay(previousDate);
+        console.log("Data fetch completed successfully.");
+    } catch (error) {
+        console.error("Error in daily data fetch:", error);
+    }
+});
 
+
+//Test--------------------------------------------
+// if (process.env.FUNCTIONS_EMULATOR) {
+//     // Call your function manually for testing
+//     const testDate = "2024-12-11"; // Replace with the desired test date
+//     fetchDataOfAllCompaniesForOneDay(testDate).then(() => {
+//         console.log("Test fetch completed.");
+//     }).catch((error) => {
+//         console.error("Test fetch failed:", error);
+//     });
+// }
 

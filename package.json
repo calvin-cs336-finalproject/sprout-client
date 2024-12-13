@@ -14,6 +14,7 @@
     "@visx/visx": "^3.12.0",
     "dotenv": "^16.4.7",
     "firebase": "^11.0.2",
+    "firebase-tools": "^13.29.0",
     "path-browserify": "^1.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

@@ -5,7 +5,7 @@ import { POLYGON_API_KEY } from '../credentials.js';
 const apiKey = POLYGON_API_KEY;
 let data;
 
-const fetchOneSetOfDataFromAPI = async (ticker, date) => {
+export const fetchOneSetOfDataFromAPI = async (ticker, date) => {
     const url = 'https://api.polygon.io/v1/open-close/' + ticker + '/' + date + '?adjusted=true&apiKey=' + apiKey;
     try {
         const response = await fetch(url);
@@ -18,7 +18,7 @@ const fetchOneSetOfDataFromAPI = async (ticker, date) => {
     }
 };
 
-const fetchDataFromAPI = async (ticker, date) => {
+export const fetchDataFromAPI = async (ticker, date) => {
     const url = 'https://api.polygon.io/v1/open-close/' + ticker + '/' + date + '?adjusted=true&apiKey=' + apiKey;
     try {
         const response = await fetch(url);
@@ -42,7 +42,7 @@ const fetchDataFromAPI = async (ticker, date) => {
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const fetchAndStoreData = async (ticker, startDate, endDate) => {
+export const fetchAndStoreData = async (ticker, startDate, endDate) => {
     const currentDate = new Date(startDate);
     let callCount = 0;
 
@@ -60,8 +60,8 @@ const fetchAndStoreData = async (ticker, startDate, endDate) => {
         currentDate.setDate(currentDate.getDate() + 1);
         callCount++;
 
-        // Check if we've made 4 API calls
-        if (callCount === 4 || currentDate === endDate) {
+        // Check if we've made 5 API calls
+        if (callCount === 5 || currentDate === endDate) {
             console.log("Reached rate limit, waiting for a minute...");
             await delay(60000); // Wait for 1 minute
             callCount = 0; // Reset the counter
@@ -71,7 +71,7 @@ const fetchAndStoreData = async (ticker, startDate, endDate) => {
     console.log("Finished fetching and storing data.");
 };
 
-const fetchDataOfAllCompanies = async (startDate, endDate) => {
+export const fetchDataOfAllCompanies = async (startDate, endDate) => {
     //execluded 'AAPL' and 'NVDA' since it is already filled
     const top20NYSECompanies = [
         'MSFT', 'AMZN', 'GOOGL', 'META', 'TSLA', 'BRK.B', 'TSM', 'AVGO',
@@ -82,23 +82,31 @@ const fetchDataOfAllCompanies = async (startDate, endDate) => {
             console.log(`Fetching data for ${ticker}...`);
             // Call fetchAndStoreData for each ticker
             await fetchAndStoreData(ticker, startDate, endDate);
-            console.log(`Successfully fetched and stored required data for ${ticker}. Now waiting
-                to ensure throttle limit is not hit.`);
-            await delay(60000);
+            //console.log(`Successfully fetched and stored required data for ${ticker}. Now waiting
+            //to ensure throttle limit is not hit.`);
+            //await delay(60000);
         } catch (error) {
             console.error(`Error fetching data for ${ticker}:`, error);
         }
     }
 };
 
-const fetchDataOfAllCompaniesForOneDay = async (date) => {
+export const fetchDataOfAllCompaniesForOneDay = async (date) => {
     const top20NYSECompanies = [
         'AAPL', 'NVDA', 'MSFT', 'AMZN', 'GOOGL', 'META', 'TSLA', 'BRK.B', 'TSM', 'AVGO',
         'WMT', 'LLY', 'JPM', 'V', 'ORCL', 'UNH', 'XOM', 'NVO', 'MA', 'COST'
     ];
     let count = 0;
     for (let ticker of top20NYSECompanies) {
-        fetchOneSetOfDataFromAPI(ticker, date);
+        try {
+            const data = await fetchOneSetOfDataFromAPI(ticker, date);
+            if (data) {
+                console.log('Storing data for ', ticker, ':', data);
+                await addStockData(ticker, data.date, data.close, "stocks");
+            }
+        } catch (error) {
+            console.error("Error fetching data for ", ticker, ":", error);
+        }
         count++;
         if (count === 4) {
             console.log("Query limit hit, must wait one minute before querying again");
@@ -111,5 +119,5 @@ const fetchDataOfAllCompaniesForOneDay = async (date) => {
 
 //fetchAndStoreData('AMZN', '2024-11-06', '2024-12-06');
 //fetchOneSetOfDataFromAPI('BRK.B', '2024-11-06');
-//fetchDataOfAllCompanies('2024-11-06', '2024-12-06');
-fetchDataOfAllCompaniesForOneDay('2024-12-09');
+fetchDataOfAllCompanies('2024-12-07', '2024-12-11');
+//fetchDataOfAllCompaniesForOneDay('2024-12-06');
