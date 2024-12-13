@@ -25,6 +25,8 @@ const Graph = ({ data, width = 600, height = 300 }) => {
         range: [innerHeight, 0], // Invert Y-axis
     });
 
+    const tickValues = data.filter((_, i) => i % 5 === 0).map(getX);
+
     return (
         <svg width={width} height={height}>
             <Group left={margin.left} top={margin.top}>
@@ -43,6 +45,7 @@ const Graph = ({ data, width = 600, height = 300 }) => {
                     scale={xScale}
                     top={innerHeight}
                     tickFormat={(d) => d.toLocaleDateString()} // Format dates
+                    tickValues={tickValues}
                 />
 
                 {/* Y-Axis */}
