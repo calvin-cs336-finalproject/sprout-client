@@ -1,7 +1,7 @@
 import React from "react";
 import { Grid2, Typography, List, ListItem, Box, Button } from "@mui/material";
 
-function Portfolio({ stocks, portfolio, handleBuyStock, handleSellStock }) {
+function Portfolio({ stocks, portfolio, handleBuyStock, handleSellStock, handleSelectStock, selectedStock }) {
 
   return (
     <Grid2 item xs={12} md={4}>
@@ -26,7 +26,10 @@ function Portfolio({ stocks, portfolio, handleBuyStock, handleSellStock }) {
                 border: "1px solid #ddd",
                 marginBottom: "0.5rem",
                 borderRadius: "5px",
+                cursor: "pointer",
+                backgroundColor: selectedStock && selectedStock.Ticker === currentStock.Ticker ? "lightgrey" : "white",
               }}
+              onClick={() => handleSelectStock(currentStock)}
             >
               <Box>
                 <Typography variant="subtitle1">

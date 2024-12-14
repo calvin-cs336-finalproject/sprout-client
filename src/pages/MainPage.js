@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -13,7 +12,8 @@ import {
   deleteFromWishlist,
 } from "../services/firestoreService.js";
 import { auth } from "../firebase.js";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import StraightIcon from "@mui/icons-material/Straight";
 
 import SelectedStock from "../components/SelectedStock.js";
 import Portfolio from "../components/Portfolio.js";
@@ -63,7 +63,8 @@ function MainPage() {
           console.error("Error fetching user data or profile:", error);
         }
       } else {
-        navigate("/auth");
+        setUser(null);
+        navigate("/login");
       }
     });
     return () => unsubscribe();
@@ -97,6 +98,10 @@ function MainPage() {
         const stockIndex = prev.findIndex(
           (item) => item.Ticker === currentStock.Ticker
         );
+
+        if (currentStock.Ticker === wishlist.find((s) => s === currentStock.Ticker)) {
+          handleRemoveFromWishlist(currentStock.Ticker);
+        }
 
         let updatedPortfolio;
 
@@ -208,6 +213,12 @@ function MainPage() {
   };
 
   const handleAddToWishlist = async (stock) => {
+    const isInPortfolio = portfolio.some((s) => s.Ticker === stock.Ticker);
+    if (isInPortfolio) {
+      console.log("Stock is already in the portfolio and cannot be added to the wishlist.");
+      return;
+    }
+
     try {
       // Check if the stock is already in the wishlist
       const stockExists = wishlist.some((item) => item.Ticker === stock.Ticker);
@@ -249,59 +260,80 @@ function MainPage() {
     return ((currentPrice - purchasePrice) / purchasePrice) * 100;
   };
 
-  const calculateOverallPerformance = () => {
-    const totalInvested = portfolio.reduce(
-      (sum, stock) => sum + stock.totalInvested,
-      0
-    );
-    const currentValue = portfolio.reduce((sum, stock) => {
-      const currentStock = stocks.find((s) => s.Ticker === stock.Ticker);
-      const currentPrice = currentStock?.Prices?.at(-1)?.[0] || 0;
-      return sum + currentPrice * stock.quantity;
-    }, 0);
+  // const calculateOverallPerformance = () => {
+  //   const totalInvested = portfolio.reduce(
+  //     (sum, stock) => sum + stock.totalInvested,
+  //     0
+  //   );
+  //   const currentValue = portfolio.reduce((sum, stock) => {
+  //     const currentStock = stocks.find((s) => s.Ticker === stock.Ticker);
+  //     const currentPrice = currentStock?.Prices?.at(-1)?.[0] || 0;
+  //     return sum + currentPrice * stock.quantity;
+  //   }, 0);
 
-    return totalInvested > 0
-      ? ((currentValue - totalInvested) / totalInvested) * 100
-      : 0;
+  //   return totalInvested > 0
+  //     ? ((currentValue - totalInvested) / totalInvested) * 100
+  //     : 0;
+  // };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate("/login");
+    } catch (error) {
+      console.error("Error during logout:", error.message);
+    }
   };
 
-  const overallPerformance = calculateOverallPerformance();
+  const handleSelectStock = (stock) => {
+    setSelectedStock(stock);
+  };
 
-  function handleLogout() {
-    // Clear authentication data (e.g., tokens or user data)
-    localStorage.removeItem("authToken"); // Remove token from localStorage (or sessionStorage, or cookies)
-    sessionStorage.removeItem("userData"); // Clear any session data (if stored here)
+  // const calculateTotalBalance = () => {
+  //   const currentValue = portfolio.reduce((sum, stock) => {
+  //     const currentStock = stocks.find((s) => s.Ticker === stock.Ticker);
+  //     const currentPrice = currentStock?.Prices?.at(-1)?.[0] || 0;
+  //     return sum + currentPrice * stock.quantity;
+  //   }, 0);
 
-    // Redirect to the login page (if using React Router)
-    navigate("/login");
-  }
+  //   return userBalance + currentValue;
+  // };
 
-  if (!user) {
-    return <p>Loading...</p>;
-  }
+  //const overallPerformance = calculateOverallPerformance();
+  //const totalBalance = calculateTotalBalance();
 
   return (
     <div className="container">
       <div className="left-bar">
-        <img
-          src="/SproutLogo.png"
-          alt="Sprout Logo"
-          style={{ display: "block", margin: "0 auto", maxWidth: "100px" }}
-        />
-        <Typography variant="h6" align="center">
-          Total Balance: ${userBalance.toFixed(2)}
-        </Typography>
-        <Typography variant="h6" align="center">
-          {" "}
-          <span style={{ color: overallPerformance >= 0 ? "green" : "red" }}>
-            {overallPerformance.toFixed(2)}%
-          </span>
-        </Typography>
+        <img className="main-logo" src="/SproutLogo.png" alt="Sprout Logo" />
+        <div className="account-value-box">
+          <div className="account-value-left">
+            <h4>Account Value: </h4>
+            <div className="account-value">${userBalance.toFixed(2)}</div>
+          </div>
+          <div className="account-value-right">
+            <div className="percent">
+              17.04%
+              <StraightIcon className="account-arrow" />
+            </div>
+          </div>
+          {/* <Typography variant="h6" align="center">
+            Total Balance: ${userBalance.toFixed(2)}
+          </Typography>
+          <Typography variant="h6" align="center">
+            {" "}
+            <span style={{ color: overallPerformance >= 0 ? "green" : "red" }}>
+              {overallPerformance.toFixed(2)}%
+            </span>
+          </Typography> */}
+        </div>
         <Portfolio
           stocks={stocks}
           portfolio={portfolio}
           handleBuyStock={handleBuyStock}
           handleSellStock={handleSellStock}
+          handleSelectStock={handleSelectStock}
+          selectedStock={selectedStock}
         />
         <Leaderboard />
       </div>
@@ -323,56 +355,11 @@ function MainPage() {
         <Wishlist
           wishlist={wishlist}
           handleRemoveFromWishlist={handleRemoveFromWishlist}
+          handleSelectStock={handleSelectStock}
           stocks={stocks}
+          selectedStock={selectedStock}
         />
       </div>
-
-      {/* <Grid2 container spacing={4}>
-        <Grid2 item xs={12}>
-          <img
-            src="/SproutLogo.png"
-            alt="Sprout Logo"
-            style={{ display: "block", margin: "0 auto", maxWidth: "100px" }}
-          />
-          <Typography variant="h6" align="center">
-            Total Balance: ${userBalance.toFixed(2)}
-          </Typography>
-          <Typography variant="h6" align="center">
-            {" "}
-            <span style={{ color: overallPerformance >= 0 ? "green" : "red" }}>
-              {overallPerformance.toFixed(2)}%
-            </span>
-          </Typography>
-          <Portfolio
-            stocks={stocks}
-            portfolio={portfolio}
-            handleBuyStock={handleBuyStock}
-            handleSellStock={handleSellStock}
-          />
-          <Leaderboard />
-        </Grid2>
-        <Grid2 item>
-          <Container className="top-bar">
-            <Stocks
-              stocks={stocks}
-              setSelectedStock={setSelectedStock}
-              selectedStock={selectedStock}
-            />
-            <ProfileDropdown username={username} handleLogout={handleLogout} />
-          </Container>
-          <SelectedStock
-            selectedStock={selectedStock}
-            handleBuyStock={handleBuyStock}
-            handleAddToWishlist={handleAddToWishlist}
-          />
-
-          <Wishlist
-            wishlist={wishlist}
-            handleRemoveFromWishlist={handleRemoveFromWishlist}
-            stocks={stocks}
-          />
-        </Grid2>
-      </Grid2> */}
     </div>
   );
 }

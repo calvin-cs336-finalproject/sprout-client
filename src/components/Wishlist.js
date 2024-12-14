@@ -1,7 +1,7 @@
 import React from "react";
 import { Typography, Box, Button } from "@mui/material";
 
-function Wishlist({ stocks, wishlist, handleRemoveFromWishlist }) {
+function Wishlist({ stocks, wishlist, handleRemoveFromWishlist, handleSelectStock, selectedStock }) {
   return (
     <div className="watchlist-container">
       <Typography variant="h5" gutterBottom>
@@ -49,8 +49,11 @@ function Wishlist({ stocks, wishlist, handleRemoveFromWishlist }) {
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
+                  cursor: "pointer",
+                  backgroundColor: selectedStock && selectedStock.Ticker === ticker ? "lightgrey" : "white",
                   flexShrink: 0, // Prevent the items from shrinking
                 }}
+                onClick={() => handleSelectStock(currentStock)}
               >
                 <Typography variant="subtitle1">
                   {ticker} - ${currentPrice.toFixed(2)}
