@@ -1,14 +1,26 @@
 * {
-  /* border: 1px solid red; */
+  margin: 0;
+  padding: 0;
+  /* border: 1px dotted red; */
 }
 
 body {
-  margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #f5f7f9;
+  overflow: hidden;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+}
+
+.router {
+  margin-left: 300px;
 }
 
 .logo {
@@ -17,11 +29,89 @@ body {
   left: 20px;
 }
 
-.topbar {
+.left-bar {
+  height: 100vh;
+  background-color: white;
+  padding-left: 32px;
+  padding-right: 32px;
+  border-right: 2px solid #f0f2f6;
+}
+
+.right-bar {
+  display: flex;
+  flex-direction: column;
+}
+
+.top-bar {
+  width: calc(100vw - 288px - 64px);
+  height: 100px;
+  background-color: white;
+  border-bottom: 2px solid #f0f2f6;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+.search-box {
+  border-radius: 8px;
+  background-color: #f5f7f9;
+  width: 450px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.search-field {
+  padding-left: 8px;
+  color: aqua;
+}
+
+.search-icon {
+  padding-left: 5px;
+  color: #939393;
+}
+
+.watchlist-container {
+  background-color: white;
+  border-radius: 16px;
+  margin: 32px;
+  padding: 32px;
+  width: calc(100vw - 288px - 128px);
+}
+
+.selected-stock-box {
+  background-color: white;
+  border-radius: 16px;
+  margin: 32px;
+  padding: 32px;
+  height: calc(100vh - 209px - 160px - 102px);
+  width: calc(100vw - 288px - 128px);
+}
+
+.stock-flex-box {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.para-butt-flex-box-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.butt-flex {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.pad-between-button {
+  padding-bottom: 40px;
 }
 
 code {

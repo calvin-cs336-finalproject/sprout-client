@@ -2,9 +2,8 @@ import React from "react";
 import { Grid2, Typography, Box, Button } from "@mui/material";
 
 function Wishlist({ stocks, wishlist, handleRemoveFromWishlist }) {
-
   return (
-    <Grid2 item xs={12} md={4}>
+    <div className="watchlist-container">
       <Typography variant="h5" gutterBottom>
         Watchlist
       </Typography>
@@ -17,11 +16,10 @@ function Wishlist({ stocks, wishlist, handleRemoveFromWishlist }) {
         <Box
           sx={{
             display: "flex",
-            flexWrap: "nowrap",  // Prevent items from wrapping to the next row
+            flexWrap: "nowrap", // Prevent items from wrapping to the next row
             gap: "1rem",
             justifyContent: "flex-start",
-            overflowX: "auto",    // Enable horizontal scrolling
-            maxWidth: "900px",     // Allow scrolling within the parent container
+            overflowX: "auto", // Enable horizontal scrolling
           }}
         >
           {wishlist.map((ticker, index) => {
@@ -30,10 +28,13 @@ function Wishlist({ stocks, wishlist, handleRemoveFromWishlist }) {
             if (!currentStock) return null; // If stock not found, skip rendering
 
             // Get the latest price from the stock object
-            const currentPrice = currentStock.Prices.length > 0
-              ? Object.values(currentStock.Prices[currentStock.Prices.length - 1])[0]
-              : 0;
-            
+            const currentPrice =
+              currentStock.Prices.length > 0
+                ? Object.values(
+                    currentStock.Prices[currentStock.Prices.length - 1]
+                  )[0]
+                : 0;
+
             // Get the percent change based on the stock object
             const percentChange = currentStock.percentChange || 0;
 
@@ -70,7 +71,7 @@ function Wishlist({ stocks, wishlist, handleRemoveFromWishlist }) {
           })}
         </Box>
       )}
-    </Grid2>
+    </div>
   );
 }
 

@@ -281,9 +281,53 @@ function MainPage() {
   }
 
   return (
-    <Container maxWidth="lg" style={{ marginTop: "2rem" }}>
-      <Grid2 container spacing={4}>
-        {/* First row: Dashbaord */}
+    <div className="container">
+      <div className="left-bar">
+        <img
+          src="/SproutLogo.png"
+          alt="Sprout Logo"
+          style={{ display: "block", margin: "0 auto", maxWidth: "100px" }}
+        />
+        <Typography variant="h6" align="center">
+          Total Balance: ${userBalance.toFixed(2)}
+        </Typography>
+        <Typography variant="h6" align="center">
+          {" "}
+          <span style={{ color: overallPerformance >= 0 ? "green" : "red" }}>
+            {overallPerformance.toFixed(2)}%
+          </span>
+        </Typography>
+        <Portfolio
+          stocks={stocks}
+          portfolio={portfolio}
+          handleBuyStock={handleBuyStock}
+          handleSellStock={handleSellStock}
+        />
+        <Leaderboard />
+      </div>
+      <div className="right-container">
+        <div className="top-bar">
+          <Stocks
+            stocks={stocks}
+            setSelectedStock={setSelectedStock}
+            selectedStock={selectedStock}
+          />
+          <ProfileDropdown username={username} handleLogout={handleLogout} />
+        </div>
+        <SelectedStock
+          selectedStock={selectedStock}
+          handleBuyStock={handleBuyStock}
+          handleAddToWishlist={handleAddToWishlist}
+        />
+
+        <Wishlist
+          wishlist={wishlist}
+          handleRemoveFromWishlist={handleRemoveFromWishlist}
+          stocks={stocks}
+        />
+      </div>
+
+      {/* <Grid2 container spacing={4}>
         <Grid2 item xs={12}>
           <img
             src="/SproutLogo.png"
@@ -307,10 +351,8 @@ function MainPage() {
           />
           <Leaderboard />
         </Grid2>
-
-        {/* Second row: Stocks and SelectedStock */}
         <Grid2 item>
-          <Container className="topbar">
+          <Container className="top-bar">
             <Stocks
               stocks={stocks}
               setSelectedStock={setSelectedStock}
@@ -330,8 +372,8 @@ function MainPage() {
             stocks={stocks}
           />
         </Grid2>
-      </Grid2>
-    </Container>
+      </Grid2> */}
+    </div>
   );
 }
 
