@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -14,6 +13,7 @@ import {
 } from "../services/firestoreService.js";
 import { auth } from "../firebase.js";
 import { onAuthStateChanged, signOut } from "firebase/auth";
+import StraightIcon from "@mui/icons-material/Straight";
 
 import SelectedStock from "../components/SelectedStock.js";
 import Portfolio from "../components/Portfolio.js";
@@ -305,20 +305,28 @@ function MainPage() {
   return (
     <div className="container">
       <div className="left-bar">
-        <img
-          src="/SproutLogo.png"
-          alt="Sprout Logo"
-          style={{ display: "block", margin: "0 auto", maxWidth: "100px" }}
-        />
-        <Typography variant="h6" align="center">
-          Total Balance: ${totalBalance.toFixed(2)}
-        </Typography>
-        <Typography variant="h6" align="center">
-          {" "}
-          <span style={{ color: overallPerformance >= 0 ? "green" : "red" }}>
-            {overallPerformance.toFixed(2)}%
-          </span>
-        </Typography>
+        <img className="main-logo" src="/SproutLogo.png" alt="Sprout Logo" />
+        <div className="account-value-box">
+          <div className="account-value-left">
+            <h4>Account Value: </h4>
+            <div className="account-value">${userBalance.toFixed(2)}</div>
+          </div>
+          <div className="account-value-right">
+            <div className="percent">
+              17.04%
+              <StraightIcon className="account-arrow" />
+            </div>
+          </div>
+          {/* <Typography variant="h6" align="center">
+            Total Balance: ${userBalance.toFixed(2)}
+          </Typography>
+          <Typography variant="h6" align="center">
+            {" "}
+            <span style={{ color: overallPerformance >= 0 ? "green" : "red" }}>
+              {overallPerformance.toFixed(2)}%
+            </span>
+          </Typography> */}
+        </div>
         <Portfolio
           stocks={stocks}
           portfolio={portfolio}
@@ -352,53 +360,6 @@ function MainPage() {
           selectedStock={selectedStock}
         />
       </div>
-
-      {/* <Grid2 container spacing={4}>
-        <Grid2 item xs={12}>
-          <img
-            src="/SproutLogo.png"
-            alt="Sprout Logo"
-            style={{ display: "block", margin: "0 auto", maxWidth: "100px" }}
-          />
-          <Typography variant="h6" align="center">
-            Total Balance: ${userBalance.toFixed(2)}
-          </Typography>
-          <Typography variant="h6" align="center">
-            {" "}
-            <span style={{ color: overallPerformance >= 0 ? "green" : "red" }}>
-              {overallPerformance.toFixed(2)}%
-            </span>
-          </Typography>
-          <Portfolio
-            stocks={stocks}
-            portfolio={portfolio}
-            handleBuyStock={handleBuyStock}
-            handleSellStock={handleSellStock}
-          />
-          <Leaderboard />
-        </Grid2>
-        <Grid2 item>
-          <Container className="top-bar">
-            <Stocks
-              stocks={stocks}
-              setSelectedStock={setSelectedStock}
-              selectedStock={selectedStock}
-            />
-            <ProfileDropdown username={username} handleLogout={handleLogout} />
-          </Container>
-          <SelectedStock
-            selectedStock={selectedStock}
-            handleBuyStock={handleBuyStock}
-            handleAddToWishlist={handleAddToWishlist}
-          />
-
-          <Wishlist
-            wishlist={wishlist}
-            handleRemoveFromWishlist={handleRemoveFromWishlist}
-            stocks={stocks}
-          />
-        </Grid2>
-      </Grid2> */}
     </div>
   );
 }
