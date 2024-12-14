@@ -1,8 +1,17 @@
 import React, { useState } from "react";
-import { Box, Typography, TextField, List, ListItem, Popover } from "@mui/material";
+import {
+  Box,
+  Typography,
+  TextField,
+  List,
+  ListItem,
+  Popover,
+  InputBase,
+} from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 
 function Stocks({ stocks, selectedStock, setSelectedStock }) {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleOpen = (event) => {
@@ -20,18 +29,29 @@ function Stocks({ stocks, selectedStock, setSelectedStock }) {
   );
 
   return (
-    <Box>
-      <TextField
+    <Box className="search-box">
+      {/* <TextField
+        className="search-field"
         fullWidth
         label="Search for various stocks"
-        variant="outlined"
+        variant="filled"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         onFocus={handleOpen} // Open popup when the input is selected
         margin="normal"
         sx={{
-          width: '400px',
+          width: "400px",
         }}
+      /> */}
+      <SearchIcon className="search-icon" />
+      <InputBase
+        className="search-field"
+        fullWidth
+        autoComplete="off"
+        placeholder="Search for various stocks"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        onFocus={handleOpen} // Open popup when the input is selected
       />
       <Popover
         open={open}
@@ -62,7 +82,7 @@ function Stocks({ stocks, selectedStock, setSelectedStock }) {
                 const latestPriceObj = stock.Prices[stock.Prices.length - 1];
                 const latestPriceValue = latestPriceObj
                   ? Object.values(latestPriceObj)[0]
-                  : 'N/A';
+                  : "N/A";
                 return (
                   <ListItem
                     key={index}
@@ -79,9 +99,14 @@ function Stocks({ stocks, selectedStock, setSelectedStock }) {
                     }}
                   >
                     <Box>
-                      <Typography variant="subtitle1">{stock.Ticker}</Typography>
+                      <Typography variant="subtitle1">
+                        {stock.Ticker}
+                      </Typography>
                       <Typography variant="body2" color="textSecondary">
-                        Price: ${latestPriceValue !== 'N/A' ? parseFloat(latestPriceValue).toFixed(2) : 'N/A'}
+                        Price: $
+                        {latestPriceValue !== "N/A"
+                          ? parseFloat(latestPriceValue).toFixed(2)
+                          : "N/A"}
                       </Typography>
                     </Box>
                   </ListItem>
