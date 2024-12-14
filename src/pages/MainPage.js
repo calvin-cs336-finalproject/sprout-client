@@ -13,7 +13,7 @@ import {
   deleteFromWishlist,
 } from "../services/firestoreService.js";
 import { auth } from "../firebase.js";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 
 import SelectedStock from "../components/SelectedStock.js";
 import Portfolio from "../components/Portfolio.js";
@@ -63,7 +63,8 @@ function MainPage() {
           console.error("Error fetching user data or profile:", error);
         }
       } else {
-        navigate("/auth");
+        setUser(null);
+        navigate("/login");
       }
     });
     return () => unsubscribe();
@@ -97,6 +98,10 @@ function MainPage() {
         const stockIndex = prev.findIndex(
           (item) => item.Ticker === currentStock.Ticker
         );
+
+        if (currentStock.Ticker === wishlist.find((s) => s === currentStock.Ticker)) {
+          handleRemoveFromWishlist(currentStock.Ticker);
+        }
 
         let updatedPortfolio;
 
@@ -208,6 +213,12 @@ function MainPage() {
   };
 
   const handleAddToWishlist = async (stock) => {
+    const isInPortfolio = portfolio.some((s) => s.Ticker === stock.Ticker);
+    if (isInPortfolio) {
+      console.log("Stock is already in the portfolio and cannot be added to the wishlist.");
+      return;
+    }
+
     try {
       // Check if the stock is already in the wishlist
       const stockExists = wishlist.some((item) => item.Ticker === stock.Ticker);
@@ -265,20 +276,31 @@ function MainPage() {
       : 0;
   };
 
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate("/login");
+    } catch (error) {
+      console.error("Error during logout:", error.message);
+    }
+  };
+
+  const handleSelectStock = (stock) => {
+    setSelectedStock(stock);
+  };
+
+  const calculateTotalBalance = () => {
+    const currentValue = portfolio.reduce((sum, stock) => {
+      const currentStock = stocks.find((s) => s.Ticker === stock.Ticker);
+      const currentPrice = currentStock?.Prices?.at(-1)?.[0] || 0;
+      return sum + currentPrice * stock.quantity;
+    }, 0);
+
+    return userBalance + currentValue;
+  };
+
   const overallPerformance = calculateOverallPerformance();
-
-  function handleLogout() {
-    // Clear authentication data (e.g., tokens or user data)
-    localStorage.removeItem("authToken"); // Remove token from localStorage (or sessionStorage, or cookies)
-    sessionStorage.removeItem("userData"); // Clear any session data (if stored here)
-
-    // Redirect to the login page (if using React Router)
-    navigate("/login");
-  }
-
-  if (!user) {
-    return <p>Loading...</p>;
-  }
+  const totalBalance = calculateTotalBalance();
 
   return (
     <div className="container">
@@ -289,7 +311,7 @@ function MainPage() {
           style={{ display: "block", margin: "0 auto", maxWidth: "100px" }}
         />
         <Typography variant="h6" align="center">
-          Total Balance: ${userBalance.toFixed(2)}
+          Total Balance: ${totalBalance.toFixed(2)}
         </Typography>
         <Typography variant="h6" align="center">
           {" "}
@@ -302,6 +324,8 @@ function MainPage() {
           portfolio={portfolio}
           handleBuyStock={handleBuyStock}
           handleSellStock={handleSellStock}
+          handleSelectStock={handleSelectStock}
+          selectedStock={selectedStock}
         />
         <Leaderboard />
       </div>
@@ -323,7 +347,9 @@ function MainPage() {
         <Wishlist
           wishlist={wishlist}
           handleRemoveFromWishlist={handleRemoveFromWishlist}
+          handleSelectStock={handleSelectStock}
           stocks={stocks}
+          selectedStock={selectedStock}
         />
       </div>
 

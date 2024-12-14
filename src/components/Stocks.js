@@ -24,7 +24,7 @@ function Stocks({ stocks, selectedStock, setSelectedStock }) {
   const open = Boolean(anchorEl);
 
   const filteredStocks = stocks.filter((stock) =>
-    stock.Ticker?.toLowerCase().includes(searchTerm.toLowerCase())
+    stock.Ticker?.toLowerCase().includes(searchTerm.toLowerCase()) || stock.Name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -99,7 +99,7 @@ function Stocks({ stocks, selectedStock, setSelectedStock }) {
                   >
                     <Box>
                       <Typography variant="subtitle1">
-                        {stock.Ticker}
+                      {stock.Name} - {stock.Ticker}
                       </Typography>
                       <Typography variant="body2" color="textSecondary">
                         Price: $

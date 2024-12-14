@@ -8,9 +8,9 @@ function SelectedStock({ selectedStock, handleBuyStock, handleAddToWishlist }) {
       {selectedStock ? (
         <div className="stock-flex-box">
           <div>
-            <Typography variant="h6">{selectedStock.Ticker}</Typography>
+            <Typography variant="h6">{selectedStock.Name} - {selectedStock.Ticker}</Typography>
             <Typography variant="body1">
-              Price: $
+              Current Price: $
               {parseFloat(
                 Object.values(
                   selectedStock.Prices[selectedStock.Prices.length - 1]
