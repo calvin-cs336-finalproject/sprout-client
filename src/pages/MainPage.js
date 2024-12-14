@@ -260,21 +260,21 @@ function MainPage() {
     return ((currentPrice - purchasePrice) / purchasePrice) * 100;
   };
 
-  const calculateOverallPerformance = () => {
-    const totalInvested = portfolio.reduce(
-      (sum, stock) => sum + stock.totalInvested,
-      0
-    );
-    const currentValue = portfolio.reduce((sum, stock) => {
-      const currentStock = stocks.find((s) => s.Ticker === stock.Ticker);
-      const currentPrice = currentStock?.Prices?.at(-1)?.[0] || 0;
-      return sum + currentPrice * stock.quantity;
-    }, 0);
+  // const calculateOverallPerformance = () => {
+  //   const totalInvested = portfolio.reduce(
+  //     (sum, stock) => sum + stock.totalInvested,
+  //     0
+  //   );
+  //   const currentValue = portfolio.reduce((sum, stock) => {
+  //     const currentStock = stocks.find((s) => s.Ticker === stock.Ticker);
+  //     const currentPrice = currentStock?.Prices?.at(-1)?.[0] || 0;
+  //     return sum + currentPrice * stock.quantity;
+  //   }, 0);
 
-    return totalInvested > 0
-      ? ((currentValue - totalInvested) / totalInvested) * 100
-      : 0;
-  };
+  //   return totalInvested > 0
+  //     ? ((currentValue - totalInvested) / totalInvested) * 100
+  //     : 0;
+  // };
 
   const handleLogout = async () => {
     try {
@@ -289,18 +289,18 @@ function MainPage() {
     setSelectedStock(stock);
   };
 
-  const calculateTotalBalance = () => {
-    const currentValue = portfolio.reduce((sum, stock) => {
-      const currentStock = stocks.find((s) => s.Ticker === stock.Ticker);
-      const currentPrice = currentStock?.Prices?.at(-1)?.[0] || 0;
-      return sum + currentPrice * stock.quantity;
-    }, 0);
+  // const calculateTotalBalance = () => {
+  //   const currentValue = portfolio.reduce((sum, stock) => {
+  //     const currentStock = stocks.find((s) => s.Ticker === stock.Ticker);
+  //     const currentPrice = currentStock?.Prices?.at(-1)?.[0] || 0;
+  //     return sum + currentPrice * stock.quantity;
+  //   }, 0);
 
-    return userBalance + currentValue;
-  };
+  //   return userBalance + currentValue;
+  // };
 
-  const overallPerformance = calculateOverallPerformance();
-  const totalBalance = calculateTotalBalance();
+  //const overallPerformance = calculateOverallPerformance();
+  //const totalBalance = calculateTotalBalance();
 
   return (
     <div className="container">
