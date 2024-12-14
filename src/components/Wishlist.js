@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid2, Typography, Box, Button } from "@mui/material";
+import { Typography, Box, Button } from "@mui/material";
 
 function Wishlist({ stocks, wishlist, handleRemoveFromWishlist }) {
   return (

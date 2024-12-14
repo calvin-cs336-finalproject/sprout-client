@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardContent, Button, Typography, Grid2 } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import GraphContainer from "./GraphContainer.js";
 
 function SelectedStock({ selectedStock, handleBuyStock, handleAddToWishlist }) {
