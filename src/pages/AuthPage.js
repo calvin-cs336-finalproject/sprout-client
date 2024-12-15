@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Imports from the material ui
-import { TextField, Button, Typography, Box, Container } from "@mui/material";
+import { TextField, Button, Typography, Box } from "@mui/material";
 
 // Imports from our firestore service and firebase
 import {
