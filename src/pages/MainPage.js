@@ -186,7 +186,7 @@ function MainPage() {
     console.log("Current Stock:", currentStock);
     if (!currentStock) return;
 
-    if (stockToSell.quantity > 0) {
+    if (currentStock.quantity > 0) {
       const currentPrice = Object.values(
         currentStock.Prices[currentStock.Prices.length - 1]
       )[0];
