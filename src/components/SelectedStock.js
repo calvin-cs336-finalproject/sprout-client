@@ -9,7 +9,6 @@ import GraphContainer from "./GraphContainer.js";
 
 // Our SelectedStock component
 function SelectedStock({ selectedStock, handleBuyStock, handleSellStock, handleAddToWishlist }) {
-
   // Return the SelectedStock component
   return (
     <div className="selected-stock-box">

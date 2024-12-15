@@ -182,13 +182,13 @@ function MainPage() {
 
   // Function to handle selling a stock
   const handleSellStock = async (stockToSell) => {
-    const currentStock = stocks.find((s) => s.Ticker === stockToSell.Ticker);
+    const currentStock = portfolio.find((s) => s.Ticker === stockToSell.Ticker);
     console.log("Current Stock:", currentStock);
     if (!currentStock) return;
 
     if (currentStock.quantity > 0) {
       const currentPrice = Object.values(
-        currentStock.Prices[currentStock.Prices.length - 1]
+        stockToSell.Prices[stockToSell.Prices.length - 1]
       )[0];
       const newBalance = userBalance + currentPrice;
       setUserBalance(newBalance);
