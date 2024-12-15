@@ -8,7 +8,7 @@ import { Button, Typography } from "@mui/material";
 import GraphContainer from "./GraphContainer.js";
 
 // Our SelectedStock component
-function SelectedStock({ selectedStock, handleBuyStock, handleSellStock, handleAddToWishlist }) {
+function SelectedStock({ selectedStock, handleRemoveFromWishlist, handleBuyStock, handleSellStock, handleAddToWishlist }) {
   // Return the SelectedStock component
   return (
     <div className="selected-stock-box">
@@ -52,6 +52,13 @@ function SelectedStock({ selectedStock, handleBuyStock, handleSellStock, handleA
                 onClick={() => handleAddToWishlist(selectedStock)}
               >
                 WATCH
+              </Button>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={() => handleRemoveFromWishlist(selectedStock.Ticker)}
+              >
+                REMOVE
               </Button>
               <div />
             </div>

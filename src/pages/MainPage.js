@@ -407,11 +407,11 @@ function MainPage() {
           handleBuyStock={handleBuyStock}
           handleSellStock={handleSellStock}
           handleAddToWishlist={handleAddToWishlist}
+          handleRemoveFromWishlist={handleRemoveFromWishlist}
         />
         {/* Render the Wishlist component */}
         <Wishlist
           wishlist={wishlist}
-          handleRemoveFromWishlist={handleRemoveFromWishlist}
           handleSelectStock={handleSelectStock}
           stocks={stocks}
           selectedStock={selectedStock}

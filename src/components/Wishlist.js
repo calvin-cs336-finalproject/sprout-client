@@ -5,7 +5,7 @@ import React from "react";
 import { Typography, Box } from "@mui/material";
 
 // Our Wishlist component
-function Wishlist({ stocks, wishlist, handleRemoveFromWishlist, handleSelectStock, selectedStock }) {
+function Wishlist({ stocks, wishlist, handleSelectStock, selectedStock }) {
 
   // Return the Wishlist component
   return (
