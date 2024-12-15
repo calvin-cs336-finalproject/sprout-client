@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+import Accordion from "@mui/material/Accordion/index.js";
+import AccordionSummary from "@mui/material/AccordionSummary/index.js";
+import AccordionDetails from "@mui/material/AccordionDetails/index.js";
+import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
+import StraightIcon from "@mui/icons-material/Straight";
+import Typography from "@mui/material/Typography/index.js";
 import {
   getAllStockData,
   getUserData,
@@ -13,8 +18,6 @@ import {
 } from "../services/firestoreService.js";
 import { auth } from "../firebase.js";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import StraightIcon from "@mui/icons-material/Straight";
-
 import SelectedStock from "../components/SelectedStock.js";
 import Portfolio from "../components/Portfolio.js";
 import Stocks from "../components/Stocks.js";
@@ -23,6 +26,11 @@ import Wishlist from "../components/Wishlist.js";
 import ProfileDropdown from "../components/Profile.js";
 
 function MainPage() {
+  const [expanded, setExpanded] = useState(false);
+
+  const handleChange = (panel) => (event, isExpanded) => {
+    setExpanded(isExpanded ? panel : false);
+  };
   const [stocks, setStocks] = useState([]);
   const [selectedStock, setSelectedStock] = useState(null);
   const [userBalance, setUserBalance] = useState(10000); // Default balance
@@ -99,7 +107,10 @@ function MainPage() {
           (item) => item.Ticker === currentStock.Ticker
         );
 
-        if (currentStock.Ticker === wishlist.find((s) => s === currentStock.Ticker)) {
+        if (
+          currentStock.Ticker ===
+          wishlist.find((s) => s === currentStock.Ticker)
+        ) {
           handleRemoveFromWishlist(currentStock.Ticker);
         }
 
@@ -215,7 +226,9 @@ function MainPage() {
   const handleAddToWishlist = async (stock) => {
     const isInPortfolio = portfolio.some((s) => s.Ticker === stock.Ticker);
     if (isInPortfolio) {
-      console.log("Stock is already in the portfolio and cannot be added to the wishlist.");
+      console.log(
+        "Stock is already in the portfolio and cannot be added to the wishlist."
+      );
       return;
     }
 
@@ -317,25 +330,51 @@ function MainPage() {
               <StraightIcon className="account-arrow" />
             </div>
           </div>
-          {/* <Typography variant="h6" align="center">
-            Total Balance: ${userBalance.toFixed(2)}
-          </Typography>
-          <Typography variant="h6" align="center">
-            {" "}
-            <span style={{ color: overallPerformance >= 0 ? "green" : "red" }}>
-              {overallPerformance.toFixed(2)}%
-            </span>
-          </Typography> */}
         </div>
-        <Portfolio
-          stocks={stocks}
-          portfolio={portfolio}
-          handleBuyStock={handleBuyStock}
-          handleSellStock={handleSellStock}
-          handleSelectStock={handleSelectStock}
-          selectedStock={selectedStock}
-        />
-        <Leaderboard />
+        <Accordion
+          classes={{ content: "custom-accordion" }}
+          disableGutters={true}
+          sx={{ boxShadow: "none" }}
+          expanded={expanded === "panel1"}
+          onChange={handleChange("panel1")}
+        >
+          <AccordionSummary
+            classes={{ content: "custom-accordion-summary" }}
+            sx={{ margin: 0 }}
+            expandIcon={<ArrowForwardIosSharpIcon />}
+            aria-controls="panel1-content"
+            id="panel1-header"
+          >
+            <Typography>Portfolio</Typography>
+          </AccordionSummary>
+          <AccordionDetails classes={{ content: "custom-accordion-details" }}>
+            <Portfolio
+              stocks={stocks}
+              portfolio={portfolio}
+              handleSelectStock={setSelectedStock}
+              selectedStock={selectedStock}
+            />
+          </AccordionDetails>
+        </Accordion>
+        <Accordion
+          className="custom-accordion"
+          disableGutters={true}
+          sx={{ boxShadow: "none" }}
+          expanded={expanded === "panel2"}
+          onChange={handleChange("panel2")}
+        >
+          <AccordionSummary
+            className="custom-accordion-summary"
+            expandIcon={<ArrowForwardIosSharpIcon />}
+            aria-controls="panel2-content"
+            id="panel2-header"
+          >
+            <Typography>Leaderboard</Typography>
+          </AccordionSummary>
+          <AccordionDetails className="custom-accordion-details">
+            <Leaderboard />
+          </AccordionDetails>
+        </Accordion>
       </div>
       <div className="right-container">
         <div className="top-bar">
@@ -348,14 +387,11 @@ function MainPage() {
         </div>
         <SelectedStock
           selectedStock={selectedStock}
-          handleBuyStock={handleBuyStock}
-          handleAddToWishlist={handleAddToWishlist}
+          handleSelectStock={setSelectedStock}
         />
-
         <Wishlist
           wishlist={wishlist}
-          handleRemoveFromWishlist={handleRemoveFromWishlist}
-          handleSelectStock={handleSelectStock}
+          handleSelectStock={setSelectedStock}
           stocks={stocks}
           selectedStock={selectedStock}
         />
