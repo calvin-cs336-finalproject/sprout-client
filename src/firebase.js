@@ -1,7 +1,9 @@
+// Imports from firebase
 import { initializeApp } from "firebase/app";
 import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
+// Import our credentials from credentials.js which is in a .gitignore file
 import {
     FIREBASE_API_KEY,
     FIREBASE_AUTH_DOMAIN,
@@ -11,6 +13,7 @@ import {
     FIREBASE_APP_ID,
 } from './credentials.js'
 
+// Firebase configuration with credentials
 const firebaseConfig = {
     apiKey: FIREBASE_API_KEY,
     authDomain: FIREBASE_AUTH_DOMAIN,
@@ -20,7 +23,7 @@ const firebaseConfig = {
     appId: FIREBASE_APP_ID,
 };
 
-
+// Initialize Firebase and authenticate
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);

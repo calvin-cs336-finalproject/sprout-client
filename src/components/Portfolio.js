@@ -1,8 +1,13 @@
+// Imports from react
 import React from "react";
+
+// Imports from material ui
 import { Grid2, Typography, List, ListItem, Box, Button } from "@mui/material";
 
+// Our Portfolio component
 function Portfolio({ stocks, portfolio, handleBuyStock, handleSellStock, handleSelectStock, selectedStock }) {
 
+  // Return the Portfolio component
   return (
     <Grid2 item xs={12} md={4}>
       <Typography variant="h5" gutterBottom>
@@ -10,15 +15,14 @@ function Portfolio({ stocks, portfolio, handleBuyStock, handleSellStock, handleS
       </Typography>
       <List
         sx={{
-          maxHeight: "300px", // Set the maximum height
-          overflowY: "auto",  // Make it scrollable
+          maxHeight: "300px",
+          overflowY: "auto", 
         }}
       >
+        {/* Display each stock in the portfolio */}
         {portfolio.map((stock, index) => {
           const currentStock = stocks.find((s) => s.Ticker === stock.Ticker);
-          const currentPrice = currentStock
-            ? Object.values(currentStock.Prices[currentStock.Prices.length - 1])[0]
-            : 0;
+          const currentPrice = currentStock.Prices.length > 0 ? Object.values(currentStock.Prices[currentStock.Prices.length - 1])[0] : 0;
           return (
             <ListItem
               key={index}
@@ -44,7 +48,7 @@ function Portfolio({ stocks, portfolio, handleBuyStock, handleSellStock, handleS
                 <Button
                   variant="outlined"
                   size="small"
-                  onClick={() => handleBuyStock(currentStock)}
+                  onClick={(e) => {e.stopPropagation(); handleBuyStock(currentStock);}}
                   style={{ marginTop: "0.5rem" }}
                 >
                   Buy
@@ -52,7 +56,7 @@ function Portfolio({ stocks, portfolio, handleBuyStock, handleSellStock, handleS
                 <Button
                   variant="outlined"
                   size="small"
-                  onClick={() => handleSellStock(stock)}
+                  onClick={(e) => {e.stopPropagation(); handleSellStock(stock);}}
                   style={{ marginTop: "0.5rem", marginLeft: "0.5rem" }}
                 >
                   Sell

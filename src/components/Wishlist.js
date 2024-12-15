@@ -1,7 +1,13 @@
+// Imports from react
 import React from "react";
+
+// Imports from material ui
 import { Typography, Box, Button } from "@mui/material";
 
+// Our Wishlist component
 function Wishlist({ stocks, wishlist, handleRemoveFromWishlist, handleSelectStock, selectedStock }) {
+
+  // Return the Wishlist component
   return (
     <div className="watchlist-container">
       <Typography variant="h5" gutterBottom>
@@ -16,16 +22,16 @@ function Wishlist({ stocks, wishlist, handleRemoveFromWishlist, handleSelectStoc
         <Box
           sx={{
             display: "flex",
-            flexWrap: "nowrap", // Prevent items from wrapping to the next row
+            flexWrap: "nowrap",
             gap: "1rem",
             justifyContent: "flex-start",
-            overflowX: "auto", // Enable horizontal scrolling
+            overflowX: "auto",
           }}
         >
+          {/* Loop through the wishlist and display each relevant stock */}
           {wishlist.map((ticker, index) => {
-            // Find the full stock object based on ticker
             const currentStock = stocks.find((s) => s.Ticker === ticker);
-            if (!currentStock) return null; // If stock not found, skip rendering
+            if (!currentStock) return null;
 
             // Get the latest price from the stock object
             const currentPrice =
@@ -38,6 +44,7 @@ function Wishlist({ stocks, wishlist, handleRemoveFromWishlist, handleSelectStoc
             // Get the percent change based on the stock object
             const percentChange = currentStock.percentChange || 0;
 
+            // Return the stock item
             return (
               <Box
                 key={index}
@@ -45,13 +52,13 @@ function Wishlist({ stocks, wishlist, handleRemoveFromWishlist, handleSelectStoc
                   border: "1px solid #ddd",
                   padding: "0.5rem",
                   borderRadius: "5px",
-                  width: "150px", // Control the width of each item
+                  width: "150px",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
                   cursor: "pointer",
                   backgroundColor: selectedStock && selectedStock.Ticker === ticker ? "lightgrey" : "white",
-                  flexShrink: 0, // Prevent the items from shrinking
+                  flexShrink: 0,
                 }}
                 onClick={() => handleSelectStock(currentStock)}
               >
@@ -64,7 +71,7 @@ function Wishlist({ stocks, wishlist, handleRemoveFromWishlist, handleSelectStoc
                 <Button
                   variant="outlined"
                   size="small"
-                  onClick={() => handleRemoveFromWishlist(ticker)}
+                  onClick={(e) => {e.stopPropagation(); handleRemoveFromWishlist(ticker)}}
                   style={{ marginTop: "0.5rem" }}
                 >
                   Remove

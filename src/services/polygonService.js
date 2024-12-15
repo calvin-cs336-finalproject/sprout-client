@@ -1,10 +1,14 @@
+// Import the fetch function from node-fetch
 import fetch from 'node-fetch';
+
+// import API key and firestore service function
 import { addStockData } from './firestoreService.js';
 import { POLYGON_API_KEY } from '../credentials.js';
 
 const apiKey = POLYGON_API_KEY;
 let data;
 
+// Function to fetch partial data from the Polygon API
 export const fetchOneSetOfDataFromAPI = async (ticker, date) => {
     const url = 'https://api.polygon.io/v1/open-close/' + ticker + '/' + date + '?adjusted=true&apiKey=' + apiKey;
     try {
@@ -18,6 +22,7 @@ export const fetchOneSetOfDataFromAPI = async (ticker, date) => {
     }
 };
 
+// Function to fetch data from the Polygon API
 export const fetchDataFromAPI = async (ticker, date) => {
     const url = 'https://api.polygon.io/v1/open-close/' + ticker + '/' + date + '?adjusted=true&apiKey=' + apiKey;
     try {
@@ -40,8 +45,10 @@ export const fetchDataFromAPI = async (ticker, date) => {
     }
 };
 
+// Create a delay function to wait for a certain amount of time for calling from the API
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Function to fetch and store data for a given ticker and date range
 export const fetchAndStoreData = async (ticker, startDate, endDate) => {
     const currentDate = new Date(startDate);
     let callCount = 0;
@@ -71,6 +78,7 @@ export const fetchAndStoreData = async (ticker, startDate, endDate) => {
     console.log("Finished fetching and storing data.");
 };
 
+// Function to fetch and store data for all companies in our list of top 20 NYSE companies
 export const fetchDataOfAllCompanies = async (startDate, endDate) => {
     //execluded 'AAPL' and 'NVDA' since it is already filled
     const top20NYSECompanies = [
@@ -91,6 +99,7 @@ export const fetchDataOfAllCompanies = async (startDate, endDate) => {
     }
 };
 
+// Function to fetch and store data for all companies in our list of top 20 NYSE companies for a single day, a daily updater
 export const fetchDataOfAllCompaniesForOneDay = async (date) => {
     const top20NYSECompanies = [
         'AAPL', 'NVDA', 'MSFT', 'AMZN', 'GOOGL', 'META', 'TSLA', 'BRK.B', 'TSM', 'AVGO',

@@ -1,22 +1,29 @@
+// Imports from react
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+// Imports from the material ui
 import { TextField, Button, Typography, Box, Container } from "@mui/material";
 
-import { auth } from "../firebase.js";
+// Imports from our firestore service and firebase
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import { auth } from "../firebase.js";
 import { createUserWithBalance } from "../services/firestoreService.js";
 
+// Our authentication page component
 const AuthPage = () => {
+  // useState hooks to manage the states of user authentication
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [username, setUsername] = useState(""); // New state for username
+  const [username, setUsername] = useState("");
   const [isSignUp, setIsSignUp] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // Function to handle the authentication
   const handleAuth = async () => {
     try {
       if (isSignUp) {
@@ -25,6 +32,7 @@ const AuthPage = () => {
           return;
         }
 
+        // Create user with email and password
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           email,
@@ -44,12 +52,14 @@ const AuthPage = () => {
     }
   };
 
+  // Function to handle the key press and check if it's the enter key
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
       handleAuth();
     }
   };
 
+  // Return the authentication page/view with all the neccessary components
   return (
     <Container>
       <img

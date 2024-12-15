@@ -1,7 +1,9 @@
 
-import { arrayRemove, arrayUnion, collection, getDocs, doc, setDoc, getDoc, updateDoc, onSnapshot, query, orderBy, limit, deleteDoc } from 'firebase/firestore';
+// Import functions from firebase and our database
+import { arrayRemove, arrayUnion, collection, getDocs, doc, setDoc, getDoc, updateDoc, onSnapshot, query, orderBy, limit, deleteDoc, writeBatch } from 'firebase/firestore';
 import { db } from '../firebase.js';
 
+// Function to add a stock to the user's wishlist
 export const addToWishlist = async (userId, stock) => {
   try {
     if (!stock.Ticker) {
@@ -19,10 +21,11 @@ export const addToWishlist = async (userId, stock) => {
     console.log(`${stock.Ticker} added to wishlist.`);
   } catch (error) {
     console.error("Error adding stock to wishlist:", error);
-    throw error; // Rethrow to allow further handling if needed
+    throw error;
   }
 };
 
+// Function to fetch the user's wishlist
 export const getWishlist = async (userId) => {
   try {
     // Get a reference to the user's document
@@ -48,7 +51,7 @@ export const getWishlist = async (userId) => {
   }
 };
 
-// Subscribe to changes in the user's wishlist
+// Function to subscribe to changes in the user's wishlist
 export const subscribeToWishlist = (userId, callback) => {
   const wishlistRef = collection(db, 'users', userId, 'wishlist');
   return onSnapshot(wishlistRef, (querySnapshot) => {
@@ -60,6 +63,7 @@ export const subscribeToWishlist = (userId, callback) => {
   });
 };
 
+// Function to remove a stock from the user's wishlist
 export const deleteFromWishlist = async (userId, stockTicker) => {
   try {
     if (!stockTicker) {
@@ -81,6 +85,56 @@ export const deleteFromWishlist = async (userId, stockTicker) => {
   }
 };
 
+// Function to update the user's portfolio with the latest stock prices
+export const updatePortfolioWithLatestPrices = async (userId, latestPrices) => {
+  try {
+    const userPortfolioRef = collection(db, 'users', userId, 'portfolio');
+    const querySnapshot = await getDocs(userPortfolioRef);
+
+    const batch = writeBatch(db); // Create a batch instance
+
+    // Iterate over each stock in the user's portfolio
+    querySnapshot.forEach((docSnapshot) => {
+      const stock = docSnapshot.data();
+      const latestPrice = latestPrices[stock.Ticker];
+      if (latestPrice !== undefined) {
+        const stockDocRef = doc(db, 'users', userId, 'portfolio', stock.Ticker);
+        batch.update(stockDocRef, {
+          currentPrice: latestPrice,
+          percentChange: ((latestPrice - stock.purchasePrice) / stock.purchasePrice) * 100,
+        });
+      }
+    });
+
+    await batch.commit();
+    console.log(`Successfully updated portfolio for user: ${userId}`);
+  } catch (error) {
+    console.error("Error updating portfolio with latest prices: ", error);
+    throw error;
+  }
+};
+
+// Function to fetch the latest prices for all stocks in a collection
+export const getLatestPrices = async (collectionName) => {
+  try {
+    const collectionRef = collection(db, collectionName);
+    const querySnapshot = await getDocs(collectionRef);
+
+    const latestPrices = {};
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      const latestPriceObj = data.Prices[data.Prices.length - 1];
+      const latestPrice = latestPriceObj ? Object.values(latestPriceObj)[0] : 0;
+      latestPrices[doc.id] = latestPrice;
+    });
+
+    console.log(`Successfully fetched latest prices from ${collectionName}`);
+    return latestPrices;
+  } catch (error) {
+    console.error("Error fetching latest prices: ", error);
+    throw error;
+  }
+};
 
 export const updateUserPortfolio = async (userId, stock, action) => {
   try {
@@ -111,7 +165,7 @@ export const updateUserPortfolio = async (userId, stock, action) => {
         await updateDoc(stockDocRef, {
           quantity: updatedQuantity,
           currentPrice: stock.currentPrice ?? existingStock.currentPrice, // Retain existing value if not provided
-          percentChange: stock.percentChange ?? existingStock.percentChange, // Retain existing value if not provided
+          percentChange: ((stock.currentPrice - stock.purchasePrice) / stock.currentPrice) * 100, // Retain existing value if not provided
           Ticker: stock.Ticker,
         });
         console.log(`Updated stock ${stock.Ticker} in portfolio.`);
@@ -129,6 +183,7 @@ export const updateUserPortfolio = async (userId, stock, action) => {
       await setDoc(stockDocRef, {
         quantity: stock.quantity,
         currentPrice: stock.currentPrice,
+        purchasePrice: stock.currentPrice,
         percentChange: stock.percentChange,
         Ticker: stock.Ticker,
       });
@@ -141,7 +196,7 @@ export const updateUserPortfolio = async (userId, stock, action) => {
 };
 
 
-// Create a user with an initial balance and initialize their portfolio subcollection
+// Funtion to create a user with an initial balance and initialize their portfolio subcollection
 export const createUserWithBalance = async (userId, email, username, initialBalance = 10000) => {
   try {
     const userDocRef = doc(db, "users", userId);
@@ -152,7 +207,7 @@ export const createUserWithBalance = async (userId, email, username, initialBala
       wishlist: [],
     });
 
-    // Initialize the portfolio subcollection with an empty document
+    // Initialize the portfolio subcollection with an empty initialization document
     const portfolioCollectionRef = collection(db, "users", userId, "portfolio");
     await setDoc(doc(portfolioCollectionRef, "initialization_doc"), { initialized: true });
 
@@ -163,7 +218,7 @@ export const createUserWithBalance = async (userId, email, username, initialBala
   }
 };
 
-// Fetch the user's portfolio
+// Function to fetch the user's portfolio
 export const getUserPortfolio = async (userId) => {
   try {
     const userPortfolioRef = collection(db, 'users', userId, 'portfolio');
@@ -184,7 +239,7 @@ export const getUserPortfolio = async (userId) => {
   }
 };
 
-// Subscribe to the user's portfolio changes
+// Function to subscribe to the user's portfolio changes
 export const subscribeToUserPortfolio = (userId, callback) => {
   const userPortfolioRef = collection(db, 'users', userId, 'portfolio');
   return onSnapshot(userPortfolioRef, (querySnapshot) => {
@@ -196,7 +251,7 @@ export const subscribeToUserPortfolio = (userId, callback) => {
   });
 };
 
-// Add stock data (price and percent change)
+// Fucnction to add stock data to our stock database collection
 export const addStockData = async (ticker, date, closePrice, collectionName) => {
   try {
     const docRef = doc(db, collectionName, ticker);
@@ -214,7 +269,7 @@ export const addStockData = async (ticker, date, closePrice, collectionName) => 
     const isDateAlreadyPresent = prices.some((entry) => entry[date] !== undefined);
     if (isDateAlreadyPresent) {
       console.log(`Data for ${ticker} on ${date} already exists. Skipping.`);
-      return; // Exit the function to avoid adding duplicate data
+      return;
     }
 
     // Add the new price
@@ -224,6 +279,7 @@ export const addStockData = async (ticker, date, closePrice, collectionName) => 
       throw new Error(`Invalid data: date=${date}, closePrice=${closePrice}`);
     }
 
+    // If the document doesn't exist, create it
     if (!docSnap.exists()) {
       await setDoc(docRef, {
         Ticker: ticker,
@@ -243,7 +299,8 @@ export const addStockData = async (ticker, date, closePrice, collectionName) => 
     throw error;
   }
 };
-// Fetch all stock data
+
+// Function to fetch all our database's stock data
 export const getAllStockData = async (collectionName) => {
   try {
     const collectionRef = collection(db, collectionName);
@@ -262,6 +319,7 @@ export const getAllStockData = async (collectionName) => {
   }
 };
 
+// Function to subscribe to stock data changes
 export const subscribeToStockData = (ticker, collectionName, callback) => {
   const docRef = doc(db, collectionName, ticker);
   return onSnapshot(docRef, (docSnap) => {
@@ -273,6 +331,7 @@ export const subscribeToStockData = (ticker, collectionName, callback) => {
   });
 };
 
+// Function to get all users from the database
 export const getAllUsers = async () => {
   try {
     const usersCollectionRef = collection(db, "users");
@@ -291,9 +350,10 @@ export const getAllUsers = async () => {
   }
 };
 
-// Function to fetch user data by user ID
+// Function to fetch user data by a user ID for specific user data
 export const getUserData = async (userId) => {
   try {
+    // Reference to the user's document
     const userDocRef = doc(db, "users", userId);
     const userDocSnap = await getDoc(userDocRef);
 
@@ -308,6 +368,7 @@ export const getUserData = async (userId) => {
   }
 };
 
+// Function to update the user's balance with new balance
 export const updateUserBalance = async (userId, newBalance) => {
   try {
     // Reference to the user's document
@@ -332,6 +393,7 @@ export const updateUserBalance = async (userId, newBalance) => {
   }
 };
 
+// Function to get the top 5 users by balance for the leaderboard
 export const getTopUsersByBalance = async () => {
   try {
     const usersRef = collection(db, 'users');

@@ -1,11 +1,20 @@
+// Imports from react
 import React from "react";
+
+// Imports from material ui
 import { Button, Typography } from "@mui/material";
+
+// Imports from components
 import GraphContainer from "./GraphContainer.js";
 
+// Our SelectedStock component
 function SelectedStock({ selectedStock, handleBuyStock, handleAddToWishlist }) {
+
+  // Return the SelectedStock component
   return (
     <div className="selected-stock-box">
       {selectedStock ? (
+        // Display the selected stock details
         <div className="stock-flex-box">
           <div>
             <Typography variant="h6">{selectedStock.Name} - {selectedStock.Ticker}</Typography>
@@ -21,14 +30,7 @@ function SelectedStock({ selectedStock, handleBuyStock, handleAddToWishlist }) {
           </div>
           <div className="para-butt-flex-box-container">
             <p className="pad-between-button">
-              [On phone in hallway] No, I know I need to work, I just- I feel
-              weird not being home. It's OK here, but people sometimes take
-              advantage because it's so relaxed. I'm a volunteer Sheriff's
-              Deputy on the weekends. And you cannot screw around there. That's
-              sort of one of the rules. [Singing as if he were the dolls in his
-              office] Christmas tiiiime is heeeere! [Normal voice] Wow. Thanks
-              guys, that sounded amazing. Hi, I'm Andy Bernard and I am the
-              first office Santa ever to make holiday wishes come true.
+              {selectedStock.Description}
             </p>
             <div className="butt-flex">
               <Button
@@ -50,6 +52,7 @@ function SelectedStock({ selectedStock, handleBuyStock, handleAddToWishlist }) {
           </div>
         </div>
       ) : (
+        // Display a message if no stock is selected
         <Typography variant="body1" color="textSecondary">
           Select a stock to view details.
         </Typography>
