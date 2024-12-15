@@ -2,49 +2,55 @@
 import React from "react";
 
 // Imports from material ui
-import { Grid2, Typography, List, ListItem, Box, Button } from "@mui/material";
+import { Grid2, List, ListItem } from "@mui/material";
 
 // Our Portfolio component
-function Portfolio({ stocks, portfolio, handleBuyStock, handleSellStock, handleSelectStock, selectedStock }) {
-
+function Portfolio({ stocks, portfolio, handleSelectStock, selectedStock }) {
   // Return the Portfolio component
   return (
     <Grid2 item xs={12} md={4}>
-      <Typography variant="h5" gutterBottom>
-        Portfolio
-      </Typography>
       <List
         sx={{
-          maxHeight: "300px",
-          overflowY: "auto", 
+          padding: "0px",
+          maxHeight: "300px", // Set the maximum height
+          overflowY: "auto", // Make it scrollable
         }}
       >
         {/* Display each stock in the portfolio */}
         {portfolio.map((stock, index) => {
           const currentStock = stocks.find((s) => s.Ticker === stock.Ticker);
-          const currentPrice = currentStock.Prices.length > 0 ? Object.values(currentStock.Prices[currentStock.Prices.length - 1])[0] : 0;
+          const currentPrice = currentStock
+            ? Object.values(
+                currentStock.Prices[currentStock.Prices.length - 1]
+              )[0]
+            : 0;
           return (
             <ListItem
               key={index}
               style={{
-                border: "1px solid #ddd",
-                marginBottom: "0.5rem",
-                borderRadius: "5px",
+                border: "0px",
+                borderRadius: "8px",
                 cursor: "pointer",
-                backgroundColor: selectedStock && selectedStock.Ticker === currentStock.Ticker ? "lightgrey" : "white",
+                marginBottom: "16px",
+                backgroundColor:
+                  selectedStock && selectedStock.Ticker === currentStock.Ticker
+                    ? "#f5f7f9"
+                    : "white",
               }}
               onClick={() => handleSelectStock(currentStock)}
             >
-              <Box>
-                <Typography variant="subtitle1">
-                  {stock.Ticker} - {stock.quantity} Share(s)
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Total Shares: ${parseFloat(currentPrice).toFixed(2)}
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Change: {stock.percentChange?.toFixed(2)}%
-                </Typography>
+              <div className="portfolio-stock">
+                <div className="portfolio-stock-top">
+                  <h1>{currentStock.Ticker}</h1>
+                  <div className="stock-price">
+                    ${parseFloat(currentPrice).toFixed(2)}
+                  </div>
+                </div>
+                <div className="portfolio-stock-bottom">
+                  <h4>{currentStock.Name}</h4>
+                  <div className="daily-change">-0.45</div>
+                </div>
+                {/*
                 <Button
                   variant="outlined"
                   size="small"
@@ -60,8 +66,8 @@ function Portfolio({ stocks, portfolio, handleBuyStock, handleSellStock, handleS
                   style={{ marginTop: "0.5rem", marginLeft: "0.5rem" }}
                 >
                   Sell
-                </Button>
-              </Box>
+                </Button> */}
+              </div>
             </ListItem>
           );
         })}

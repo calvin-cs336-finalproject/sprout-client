@@ -19,7 +19,7 @@ function Leaderboard() {
         const users = await getTopUsersByBalance();
         setTopUsers(users);
       } catch (error) {
-        console.error('Error loading leaderboard: ', error);
+        console.error("Error loading leaderboard: ", error);
       }
     };
 
@@ -31,23 +31,17 @@ function Leaderboard() {
   // Return the leaderboard component
   return (
     <Grid2 item xs={12} md={4}>
-      <Typography variant="h5">
-        Leaderboard
-      </Typography>
       <List>
         {/* List of top users */}
         {topUsers.map((user, index) => (
-          <ListItem
-            key={user.id}
-          >
+          <ListItem key={user.id}>
             <Box>
               {/* Display user's username and balance */}
               <Typography variant="subtitle1">
-                {index + 1}. {user.username || 'Anonymous'}: ${user.balance?.toFixed(2) || '0.00'}
+                {index + 1}. {user.username || "Anonymous"}: $
+                {user.balance?.toFixed(2) || "0.00"}
               </Typography>
-              <Typography variant="body2" color="textSecondary">
-                
-              </Typography>
+              <Typography variant="body2" color="textSecondary"></Typography>
             </Box>
           </ListItem>
         ))}

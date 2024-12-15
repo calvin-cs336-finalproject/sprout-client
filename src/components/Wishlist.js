@@ -2,7 +2,7 @@
 import React from "react";
 
 // Imports from material ui
-import { Typography, Box, Button } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 
 // Our Wishlist component
 function Wishlist({ stocks, wishlist, handleRemoveFromWishlist, handleSelectStock, selectedStock }) {
@@ -49,7 +49,6 @@ function Wishlist({ stocks, wishlist, handleRemoveFromWishlist, handleSelectStoc
               <Box
                 key={index}
                 sx={{
-                  border: "1px solid #ddd",
                   padding: "0.5rem",
                   borderRadius: "5px",
                   width: "150px",
@@ -57,12 +56,32 @@ function Wishlist({ stocks, wishlist, handleRemoveFromWishlist, handleSelectStoc
                   flexDirection: "column",
                   alignItems: "center",
                   cursor: "pointer",
-                  backgroundColor: selectedStock && selectedStock.Ticker === ticker ? "lightgrey" : "white",
+                  backgroundColor:
+                  selectedStock && selectedStock.Ticker === currentStock.Ticker
+                    ? "#f5f7f9"
+                    : "white",
                   flexShrink: 0,
                 }}
                 onClick={() => handleSelectStock(currentStock)}
               >
-                <Typography variant="subtitle1">
+                <div className="watch-stock-top">
+                  {currentStock && (
+                    <img
+                      className="watch-img"
+                      src={currentStock.Image}
+                      alt={currentStock.Name}
+                    />
+                  )}
+                  <div className="watch-stock-names">
+                    <h1>{currentStock.Ticker}</h1>
+                    <h4 className="watch-short-name">{currentStock.Name}</h4>
+                  </div>
+                </div>
+                <div className="watch-stock-bottom">
+                  <div className="stock-price">${currentPrice.toFixed(2)}</div>
+                  <div className="daily-change">{percentChange}</div>
+                </div>
+                {/* <Typography variant="subtitle1">
                   {ticker} - ${currentPrice.toFixed(2)}
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
@@ -76,6 +95,13 @@ function Wishlist({ stocks, wishlist, handleRemoveFromWishlist, handleSelectStoc
                 >
                   Remove
                 </Button>
+                {currentStock && (
+                  <img
+                    className="stock-img"
+                    src={currentStock.Image}
+                    alt={currentStock.Name}
+                  />
+                )} */}
               </Box>
             );
           })}

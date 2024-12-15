@@ -91,17 +91,26 @@ function StockSearch({ stocks, selectedStock, setSelectedStock }) {
                       borderRadius: "5px",
                     }}
                   >
-                    <Box>
-                      <Typography variant="subtitle1">
-                      {stock.Name} - {stock.Ticker}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        Price: $
-                        {latestPriceValue !== "N/A"
-                          ? parseFloat(latestPriceValue).toFixed(2)
-                          : "N/A"}
-                      </Typography>
-                    </Box>
+                    <div className="search-stock">
+                      {stock && (
+                        <img
+                          className="stock-img"
+                          src={stock.Image}
+                          alt={stock.Name}
+                        />
+                      )}
+                      <div className="search-stock-info">
+                        <Typography variant="subtitle1">
+                          {stock.Name} - {stock.Ticker}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                          Price: $
+                          {latestPriceValue !== "N/A"
+                            ? parseFloat(latestPriceValue).toFixed(2)
+                            : "N/A"}
+                        </Typography>
+                      </div>
+                    </div>
                   </ListItem>
                 );
               })

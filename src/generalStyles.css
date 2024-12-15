@@ -12,12 +12,29 @@ body {
   overflow: hidden;
 }
 
+h1 {
+  font-size: 33px;
+}
+
 h4 {
   color: #939393;
   font-size: 17px;
   font-style: normal;
   font-weight: 500;
   line-height: normal;
+}
+
+.stock-price {
+  font-size: 24px;
+}
+
+.daily-change {
+  border-radius: 8px;
+  color: white;
+  padding: 6px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  background-color: #ec3936;
 }
 
 .container {
@@ -63,6 +80,7 @@ h4 {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  margin-bottom: 22px;
 }
 
 .account-value-right {
@@ -84,13 +102,39 @@ h4 {
 .account-arrow {
   color: #14ae5c;
   font-size: 1rem !important;
-  /* Hey Professor, I know you taught us to avoid using !important, but I had to use it here because the arrow was not showing up without it. I tried to use specificity to solve the issue, but it didn't work. I hope you understand. Thank you! */
+  /* Hey Professor, I know you taught us to avoid using !important, but I had to use it here because the arrow was not changing size without it! I hope you understand. Thank you! */
 }
 
 .account-value {
   font-size: 24px;
   font-style: normal;
   font-weight: 400;
+}
+
+.portfolio-stock {
+  display: flex;
+  flex-direction: column;
+  width: 198px;
+}
+
+.portfolio-stock-top {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stock-img {
+  width: 40px;
+  height: 40px;
+  margin-right: 16px;
+}
+
+.portfolio-stock-bottom {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .right-bar {
@@ -130,12 +174,47 @@ h4 {
   color: #939393;
 }
 
+.search-stock {
+  display: flex;
+  display: row;
+  align-items: center;
+}
+
 .watchlist-container {
   background-color: white;
   border-radius: 16px;
   margin: 22px;
   padding: 22px;
   width: calc(100vw - 288px - 110px);
+}
+
+.watch-stock-top {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 182px;
+  /* justify-content: flex-start; */
+}
+
+.watch-img {
+  width: 60px;
+  height: 60px;
+  margin-right: 16px;
+}
+
+.watch-short-name {
+  width: 102px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.watch-stock-bottom {
+  width: 172px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .selected-stock-box {
