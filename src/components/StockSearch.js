@@ -1,4 +1,7 @@
+// Imports from react
 import React, { useState } from "react";
+
+// Imports from material ui
 import {
   Box,
   Typography,
@@ -9,39 +12,30 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 
-function Stocks({ stocks, selectedStock, setSelectedStock }) {
+// Our StockSearch component
+function StockSearch({ stocks, selectedStock, setSelectedStock }) {
+  // useState hook to manage the search term
   const [searchTerm, setSearchTerm] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
 
+  // Functions to handle opening and closing the popover
   const handleOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
-
   const handleClose = () => {
     setAnchorEl(null);
   };
 
   const open = Boolean(anchorEl);
 
+  // Function to filter the stocks based on the search term
   const filteredStocks = stocks.filter((stock) =>
     stock.Ticker?.toLowerCase().includes(searchTerm.toLowerCase()) || stock.Name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Return the StockSearch component
   return (
     <Box className="search-box">
-      {/* <TextField
-        className="search-field"
-        fullWidth
-        label="Search for various stocks"
-        variant="filled"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        onFocus={handleOpen} // Open popup when the input is selected
-        margin="normal"
-        sx={{
-          width: "400px",
-        }}
-      /> */}
       <SearchIcon className="search-icon" />
       <InputBase
         className="search-field"
@@ -50,7 +44,7 @@ function Stocks({ stocks, selectedStock, setSelectedStock }) {
         placeholder="Search for various stocks"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        onFocus={handleOpen} // Open popup when the input is selected
+        onFocus={handleOpen}
       />
       <Popover
         open={open}
@@ -68,8 +62,8 @@ function Stocks({ stocks, selectedStock, setSelectedStock }) {
         disableAutoFocus
         PaperProps={{
           style: {
-            maxHeight: 300, // Limit height for scroll
-            width: anchorEl?.offsetWidth || 300, // Match width of the TextField
+            maxHeight: 300,
+            width: anchorEl?.offsetWidth || 300,
             padding: "0.5rem",
           },
         }}
@@ -88,7 +82,7 @@ function Stocks({ stocks, selectedStock, setSelectedStock }) {
                     button
                     onClick={() => {
                       setSelectedStock(stock);
-                      handleClose(); // Close popup on selection
+                      handleClose();
                     }}
                     selected={selectedStock?.Ticker === stock.Ticker}
                     style={{
@@ -97,27 +91,38 @@ function Stocks({ stocks, selectedStock, setSelectedStock }) {
                       borderRadius: "5px",
                     }}
                   >
-                    <Box>
-                      <Typography variant="subtitle1">
-                      {stock.Name} - {stock.Ticker}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        Price: $
-                        {latestPriceValue !== "N/A"
-                          ? parseFloat(latestPriceValue).toFixed(2)
-                          : "N/A"}
-                      </Typography>
-                    </Box>
+                    <div className="search-stock">
+                      {stock && (
+                        <img
+                          className="stock-img"
+                          src={stock.Image}
+                          alt={stock.Name}
+                        />
+                      )}
+                      <div className="search-stock-info">
+                        <Typography variant="subtitle1">
+                          {stock.Name} - {stock.Ticker}
+                        </Typography>
+                        <Typography variant="body2" color="textSecondary">
+                          Price: $
+                          {latestPriceValue !== "N/A"
+                            ? parseFloat(latestPriceValue).toFixed(2)
+                            : "N/A"}
+                        </Typography>
+                      </div>
+                    </div>
                   </ListItem>
                 );
               })
             ) : (
+              // Display a message if no stocks are found
               <Typography variant="body2" color="textSecondary">
                 No stocks found.
               </Typography>
             )}
           </List>
         ) : (
+          // Display a message if no stocks are available
           <Typography variant="body2" color="textSecondary">
             No stocks available.
           </Typography>
@@ -127,4 +132,4 @@ function Stocks({ stocks, selectedStock, setSelectedStock }) {
   );
 }
 
-export default Stocks;
+export default StockSearch;

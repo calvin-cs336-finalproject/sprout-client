@@ -1,7 +1,11 @@
+// Imports from react
 import React, { useState } from "react";
+
+// Imports from material ui
 import { Box, Button, Menu, MenuItem, Typography } from "@mui/material";
 import { AccountCircle } from "@mui/icons-material";
 
+// Our Profile Dropdown component
 function ProfileDropdown({ username, handleLogout }) {
   const [anchorEl, setAnchorEl] = useState(null);
   
@@ -13,6 +17,7 @@ function ProfileDropdown({ username, handleLogout }) {
     setAnchorEl(null);
   };
 
+  // Return the ProfileDropdown component
   return (
     <Box>
       <Button
@@ -30,7 +35,7 @@ function ProfileDropdown({ username, handleLogout }) {
         onClose={handleClose}
         PaperProps={{
           style: {
-            width: "200px", // Adjust width as needed
+            width: "200px",
             padding: "10px",
           },
         }}
