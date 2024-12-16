@@ -19,7 +19,7 @@ const AuthPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const [isSignUp, setIsSignUp] = useState(false); //was true
+  const [isSignUp, setIsSignUp] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
