@@ -5,8 +5,13 @@ import React from "react";
 import { Typography, Box } from "@mui/material";
 
 // Our Wishlist component
-function Wishlist({ stocks, wishlist, handleSelectStock, selectedStock }) {
-
+function Wishlist({
+  stocks,
+  wishlist,
+  handleSelectStock,
+  selectedStock,
+  calculateStockPerformance,
+}) {
   // Return the Wishlist component
   return (
     <div className="watchlist-container">
@@ -41,8 +46,7 @@ function Wishlist({ stocks, wishlist, handleSelectStock, selectedStock }) {
                   )[0]
                 : 0;
 
-            // Get the percent change based on the stock object
-            const percentChange = currentStock.percentChange || 0;
+            const dailyPerformance = calculateStockPerformance(currentStock);
 
             // Return the stock item
             return (
@@ -50,16 +54,17 @@ function Wishlist({ stocks, wishlist, handleSelectStock, selectedStock }) {
                 key={index}
                 sx={{
                   padding: "0.5rem",
-                  borderRadius: "5px",
-                  width: "150px",
+                  borderRadius: "8px",
+                  width: "180px",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
                   cursor: "pointer",
                   backgroundColor:
-                  selectedStock && selectedStock.Ticker === currentStock.Ticker
-                    ? "#f5f7f9"
-                    : "white",
+                    selectedStock &&
+                    selectedStock.Ticker === currentStock.Ticker
+                      ? "#f5f7f9"
+                      : "white",
                   flexShrink: 0,
                 }}
                 onClick={() => handleSelectStock(currentStock)}
@@ -78,8 +83,8 @@ function Wishlist({ stocks, wishlist, handleSelectStock, selectedStock }) {
                   </div>
                 </div>
                 <div className="watch-stock-bottom">
-                  <div className="stock-price">${currentPrice.toFixed(2)}</div>
-                  <div className="daily-change">{percentChange}</div>
+                  <div className="price">${currentPrice.toFixed(2)}</div>
+                  <div className="daily-change">{dailyPerformance}</div>
                 </div>
                 {/* <Typography variant="subtitle1">
                   {ticker} - ${currentPrice.toFixed(2)}

@@ -21,6 +21,7 @@ import {
   deleteFromWishlist,
   getLatestPrices,
   updatePortfolioWithLatestPrices,
+  setTotalUserBalance,
 } from "../services/firestoreService.js";
 import { auth } from "../firebase.js";
 import { onAuthStateChanged, signOut } from "firebase/auth";
@@ -80,6 +81,14 @@ function MainPage() {
 
           const latestPrices = await getLatestPrices("stocks");
           await updatePortfolioWithLatestPrices(currentUser.uid, latestPrices);
+
+          await setTotalUserBalance(
+            user.uid,
+            userBalance +
+              portfolio.reduce((sum, stock) => {
+                return sum + stock.currentPrice * stock.quantity;
+              }, 0)
+          );
         } catch (error) {
           console.error("Error fetching user data or profile:", error);
         }
@@ -90,6 +99,16 @@ function MainPage() {
     });
     return () => unsubscribe();
   }, [navigate]);
+
+  // Function to calculate the performance of a stock
+  const calculateStockPerformance = (stock) => {
+    return (
+      ((Object.values(stock.Prices[stock.Prices.length - 1])[0] -
+        Object.values(stock.Prices[stock.Prices.length - 2])[0]) /
+        Object.values(stock.Prices[stock.Prices.length - 1])[0]) *
+      100
+    ).toFixed(2);
+  };
 
   // Function to handle buying a stock
   const handleBuyStock = async (currentStock) => {
@@ -269,7 +288,6 @@ function MainPage() {
   // Function to handle removing a stock from the wishlist
   const handleRemoveFromWishlist = async (stockTicker) => {
     try {
-
       // Call the deleteFromWishlist function from our service
       await deleteFromWishlist(user.uid, stockTicker);
 
@@ -369,7 +387,8 @@ function MainPage() {
               handleSelectStock={setSelectedStock}
               selectedStock={selectedStock}
               handleBuyStock={handleBuyStock}
-            handleSellStock={handleSellStock}
+              handleSellStock={handleSellStock}
+              calculateStockPerformance={calculateStockPerformance}
             />
           </AccordionDetails>
         </Accordion>
@@ -419,6 +438,7 @@ function MainPage() {
           handleSelectStock={handleSelectStock}
           stocks={stocks}
           selectedStock={selectedStock}
+          calculateStockPerformance={calculateStockPerformance}
         />
       </div>
     </div>

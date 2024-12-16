@@ -5,7 +5,13 @@ import React from "react";
 import { Grid2, List, ListItem } from "@mui/material";
 
 // Our Portfolio component
-function Portfolio({ stocks, portfolio, handleSelectStock, selectedStock }) {
+function Portfolio({
+  stocks,
+  portfolio,
+  handleSelectStock,
+  selectedStock,
+  calculateStockPerformance,
+}) {
   // Return the Portfolio component
   return (
     <Grid2 item xs={12} md={4}>
@@ -24,6 +30,7 @@ function Portfolio({ stocks, portfolio, handleSelectStock, selectedStock }) {
                 currentStock.Prices[currentStock.Prices.length - 1]
               )[0]
             : 0;
+          const performance = calculateStockPerformance(currentStock);
           return (
             <ListItem
               key={index}
@@ -31,7 +38,7 @@ function Portfolio({ stocks, portfolio, handleSelectStock, selectedStock }) {
                 border: "0px",
                 borderRadius: "8px",
                 cursor: "pointer",
-                marginBottom: "16px",
+                marginBottom: "0px",
                 backgroundColor:
                   selectedStock && selectedStock.Ticker === currentStock.Ticker
                     ? "#f5f7f9"
@@ -47,8 +54,8 @@ function Portfolio({ stocks, portfolio, handleSelectStock, selectedStock }) {
                   </div>
                 </div>
                 <div className="portfolio-stock-bottom">
-                  <h4>{currentStock.Name}</h4>
-                  <div className="daily-change">-0.45</div>
+                  <h4 className="shortened-name">{currentStock.Name}</h4>
+                  <div className="daily-change">{performance}</div>
                 </div>
                 {/*
                 <Button
