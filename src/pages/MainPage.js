@@ -335,7 +335,7 @@ function MainPage() {
 
   // Function to calculate the overall performance of the user
   const calculateOverallPerformance = () => {
-    return ((totalBalance - 10000) / totalBalance) * 100;
+    return ((totalBalance - 10000) / 10000) * 100;
   };
 
   // const calculateStockPerformance = (stock) => {
@@ -368,41 +368,46 @@ function MainPage() {
                 }
           }
         >
-          <div className="account-value-left">
-            <h4>Account Value: </h4>
-            <div className="account-value">${totalBalance.toFixed(2)}</div>
-          </div>
-          <div className="account-value-right">
-            <div
-              className="percent"
-              style={
-                overallPerformance < 0
-                  ? {
-                      color: "#ec3936",
-                    }
-                  : {
-                      color: "#14ae5c",
-                    }
-              }
-            >
-              {overallPerformance.toFixed(2)}%
-              <StraightIcon
-                className="account-arrow"
+          <div className="account-value-top">
+            <div className="account-value-left">
+              <h4>Account Value: </h4>
+              <div className="account-value">${totalBalance.toFixed(2)}</div>
+            </div>
+            <div className="account-value-right">
+              <div
+                className="percent"
                 style={
                   overallPerformance < 0
                     ? {
-                        fontSize: "1rem",
                         color: "#ec3936",
-                        rotate: "180deg",
                       }
                     : {
-                        fontSize: "1rem",
                         color: "#14ae5c",
                       }
                 }
-              />
+              >
+                {overallPerformance.toFixed(2)}%
+                <StraightIcon
+                  className="account-arrow"
+                  style={
+                    overallPerformance < 0
+                      ? {
+                          fontSize: "1rem",
+                          color: "#ec3936",
+                          rotate: "180deg",
+                        }
+                      : {
+                          fontSize: "1rem",
+                          color: "#14ae5c",
+                        }
+                  }
+                />
+              </div>
             </div>
           </div>
+          <h4>Balance:</h4>
+          <div>${userBalance.toFixed(2)}</div>
+          {}
         </div>
         <Accordion
           classes={{ content: "custom-accordion" }}
