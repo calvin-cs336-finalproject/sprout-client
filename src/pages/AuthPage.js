@@ -19,7 +19,7 @@ const AuthPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
-  const [isSignUp, setIsSignUp] = useState(false); //was true
+  const [isSignUp, setIsSignUp] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -61,16 +61,27 @@ const AuthPage = () => {
 
   // Return the authentication page/view with all the neccessary components
   return (
-    <div style={{ width: '100vw', height: '100vh' }}>
+    <div style={{ width: "100vw", height: "100vh" }}>
       <img
         className="logo"
         src="/SproutLogo.png"
         alt="Sprout Logo"
         style={{ display: "block", margin: "0 auto", maxWidth: "100px" }}
       />
-      <Box display="flex" flexDirection="column" alignItems="center" mt={5} className="log-in-page">
-        <Box className='log-in-box'>
-          <Typography variant="h4" gutterBottom className="log-in-header" align="center">
+      <Box
+        display="flex"
+        flexDirection="column"
+        alignItems="center"
+        mt={5}
+        className="log-in-page"
+      >
+        <Box className="log-in-box">
+          <Typography
+            variant="h4"
+            gutterBottom
+            className="log-in-header"
+            align="center"
+          >
             {isSignUp ? "Sign Up" : "Sign In"}
           </Typography>
           {isSignUp && ( // Only show username field for sign-up
@@ -81,7 +92,7 @@ const AuthPage = () => {
               onChange={(e) => setUsername(e.target.value)}
               style={{ marginBottom: "1rem" }}
               onKeyDown={handleKeyPress}
-              className='log-in-field'
+              className="log-in-field"
             />
           )}
           <TextField
@@ -92,7 +103,7 @@ const AuthPage = () => {
             onChange={(e) => setEmail(e.target.value)}
             style={{ marginBottom: "1rem" }}
             onKeyDown={handleKeyPress}
-            className='log-in-field'
+            className="log-in-field"
           />
           <TextField
             label="Password"
@@ -102,7 +113,7 @@ const AuthPage = () => {
             onChange={(e) => setPassword(e.target.value)}
             style={{ marginBottom: "1rem" }}
             onKeyDown={handleKeyPress}
-            className='log-in-field'
+            className="log-in-field"
           />
           {error && (
             <Typography color="error" style={{ marginBottom: "1rem" }}>
@@ -118,7 +129,10 @@ const AuthPage = () => {
             {isSignUp ? "Sign Up" : "Sign In"}
           </Button>
         </Box>
-        <Button onClick={() => setIsSignUp((prev) => !prev)} style={{ marginBottom: "10%" }}>
+        <Button
+          onClick={() => setIsSignUp((prev) => !prev)}
+          style={{ marginBottom: "10%" }}
+        >
           {isSignUp
             ? "Already have an account? Sign In"
             : "Don't have an account? Sign Up"}

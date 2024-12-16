@@ -29,8 +29,10 @@ function StockSearch({ stocks, selectedStock, setSelectedStock }) {
   const open = Boolean(anchorEl);
 
   // Function to filter the stocks based on the search term
-  const filteredStocks = stocks.filter((stock) =>
-    stock.Ticker?.toLowerCase().includes(searchTerm.toLowerCase()) || stock.Name?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredStocks = stocks.filter(
+    (stock) =>
+      stock.Ticker?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      stock.Name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Return the StockSearch component
@@ -100,15 +102,16 @@ function StockSearch({ stocks, selectedStock, setSelectedStock }) {
                         />
                       )}
                       <div className="search-stock-info">
-                        <Typography variant="subtitle1">
-                          {stock.Name} - {stock.Ticker}
-                        </Typography>
-                        <Typography variant="body2" color="textSecondary">
-                          Price: $
-                          {latestPriceValue !== "N/A"
-                            ? parseFloat(latestPriceValue).toFixed(2)
-                            : "N/A"}
-                        </Typography>
+                        <div className="search-stock-titles">
+                          <h2 className="search-ticker">{stock.Ticker}</h2>
+                          <div className="search-stock-price">
+                            $
+                            {latestPriceValue !== "N/A"
+                              ? parseFloat(latestPriceValue).toFixed(2)
+                              : "N/A"}
+                          </div>
+                        </div>
+                        <h4 className="search-title">{stock.Name}</h4>
                       </div>
                     </div>
                   </ListItem>
