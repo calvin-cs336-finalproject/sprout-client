@@ -85,7 +85,7 @@ function MainPage() {
           await setTotalUserBalance(
             currentUser.uid,
             currentUser.balance +
-            currentUser.portfolio.reduce((sum, stock) => {
+            profile.reduce((sum, stock) => {
               return sum + stock.currentPrice * stock.quantity;
             }, 0)
           );
