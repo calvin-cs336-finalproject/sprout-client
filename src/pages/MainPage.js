@@ -335,7 +335,7 @@ function MainPage() {
 
   // Function to calculate the overall performance of the user
   const calculateOverallPerformance = () => {
-    return ((totalBalance - 10000) / totalBalance) * 100;
+    return ((totalBalance - 10000) / 10000) * 100;
   };
 
   // const calculateStockPerformance = (stock) => {
@@ -354,17 +354,60 @@ function MainPage() {
       {/* Create the dashboard section */}
       <div className="left-bar">
         <img className="main-logo" src="/SproutLogo.png" alt="Sprout Logo" />
-        <div className="account-value-box">
-          <div className="account-value-left">
-            <h4>Account Value: </h4>
-            <div className="account-value">${totalBalance.toFixed(2)}</div>
-          </div>
-          <div className="account-value-right">
-            <div className="percent">
-              {overallPerformance.toFixed(2)}%
-              <StraightIcon className="account-arrow" />
+        <div
+          className="account-value-box"
+          style={
+            totalBalance < 10000
+              ? {
+                  border: "1px solid rgba(236, 57, 54, 0.65)",
+                  boxShadow: "0px 2px 18.5px -4px rgba(236, 67, 67, 0.4)",
+                }
+              : {
+                  border: "1px solid rgba(20, 174, 92, 0.6)",
+                  boxShadow: "0px 2px 18.5px -4px rgba(20, 174, 92, 0.35)",
+                }
+          }
+        >
+          <div className="account-value-top">
+            <div className="account-value-left">
+              <h4>Account Value: </h4>
+              <div className="account-value">${totalBalance.toFixed(2)}</div>
+            </div>
+            <div className="account-value-right">
+              <div
+                className="percent"
+                style={
+                  overallPerformance < 0
+                    ? {
+                        color: "#ec3936",
+                      }
+                    : {
+                        color: "#14ae5c",
+                      }
+                }
+              >
+                {overallPerformance.toFixed(2)}%
+                <StraightIcon
+                  className="account-arrow"
+                  style={
+                    overallPerformance < 0
+                      ? {
+                          fontSize: "1rem",
+                          color: "#ec3936",
+                          rotate: "180deg",
+                        }
+                      : {
+                          fontSize: "1rem",
+                          color: "#14ae5c",
+                        }
+                  }
+                />
+              </div>
             </div>
           </div>
+          <h4>Balance:</h4>
+          <div>${userBalance.toFixed(2)}</div>
+          {}
         </div>
         <Accordion
           classes={{ content: "custom-accordion" }}
@@ -383,7 +426,6 @@ function MainPage() {
             <Typography>Portfolio</Typography>
           </AccordionSummary>
           <AccordionDetails classes={{ content: "custom-accordion-details" }}>
-            {/* Render the Portfolio component */}
             <Portfolio
               stocks={stocks}
               portfolio={portfolio}
