@@ -338,6 +338,10 @@ function MainPage() {
     return ((totalBalance - 10000) / totalBalance) * 100;
   };
 
+  const calculateStockPerformance = (stock) => {
+    return ((Object.values(stock.Prices[stock.Prices.length - 1])[0] - Object.values(stock.Prices[stock.Prices.length - 2])[0]) / Object.values(stock.Prices[stock.Prices.length - 1])[0]) * 100;
+  }
+
   // Calculate the overall performance
   const overallPerformance = calculateOverallPerformance();
 
