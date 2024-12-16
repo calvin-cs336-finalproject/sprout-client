@@ -219,7 +219,7 @@ export const setTotalUserBalance = async (userId, totalBalance) => {
   try {
     const userDocRef = doc(db, "users", userId);
     await updateDoc(userDocRef, {
-      totalBalance: totalBalance,
+      totalBalance: this.totalBalance,
     });
 
     console.log(`User total balance updated to: ${totalBalance}`);
