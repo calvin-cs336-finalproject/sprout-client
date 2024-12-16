@@ -16,6 +16,10 @@ h1 {
   font-size: 33px;
 }
 
+h2 {
+  font-size: 24px;
+}
+
 h3 {
   color: #000000;
   font-size: 19px;
@@ -81,9 +85,7 @@ h4 {
 
 .account-value-box {
   border-radius: 16px;
-  border: 1px solid rgba(20, 174, 92, 0.6);
   background: #fff;
-  box-shadow: 0px 2px 18.5px -4px rgba(20, 174, 92, 0.35);
   padding: 20px;
   padding-top: 17px;
   width: 220px;
@@ -99,7 +101,6 @@ h4 {
 }
 
 .percent {
-  color: #14ae5c;
   text-align: right;
   font-family: Roboto;
   font-size: 17px;
@@ -110,7 +111,6 @@ h4 {
 }
 
 .account-arrow {
-  color: #14ae5c;
   font-size: 1rem !important;
   /* Hey Professor, I know you taught us to avoid using !important, but I had to use it here because the arrow was not changing size without it! I hope you understand. Thank you! */
 }
@@ -222,6 +222,28 @@ h4 {
   align-items: center;
 }
 
+.search-stock-info {
+  display: flex;
+  flex-direction: row;
+}
+
+.search-stock-titles {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.search-title {
+  padding-top: 3px;
+  padding-left: 12px;
+  line-height: 23px;
+  width: 266px;
+}
+
+.search-stock-price {
+  font-weight: 500;
+}
+
 .watchlist-container {
   background-color: white;
   border-radius: 16px;
@@ -241,7 +263,9 @@ h4 {
 .watch-img {
   width: 60px;
   height: 60px;
+  margin: 4px;
   margin-right: 16px;
+  margin-bottom: 8px;
 }
 
 .watch-short-name {

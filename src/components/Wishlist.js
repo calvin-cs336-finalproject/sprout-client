@@ -84,7 +84,20 @@ function Wishlist({
                 </div>
                 <div className="watch-stock-bottom">
                   <div className="price">${currentPrice.toFixed(2)}</div>
-                  <div className="daily-change">{dailyPerformance}</div>
+                  <div
+                    className="daily-change"
+                    style={
+                      dailyPerformance < 0
+                        ? {
+                            backgroundColor: "#ec3936",
+                          }
+                        : {
+                            backgroundColor: "#14ae5c",
+                          }
+                    }
+                  >
+                    {dailyPerformance}%
+                  </div>
                 </div>
                 {/* <Typography variant="subtitle1">
                   {ticker} - ${currentPrice.toFixed(2)}

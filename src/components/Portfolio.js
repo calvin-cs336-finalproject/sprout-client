@@ -23,6 +23,7 @@ function Portfolio({
         }}
       >
         {/* Display each stock in the portfolio */}
+
         {portfolio.map((stock, index) => {
           const currentStock = stocks.find((s) => s.Ticker === stock.Ticker);
           const currentPrice = currentStock
@@ -50,12 +51,26 @@ function Portfolio({
                 <div className="portfolio-stock-top">
                   <h1>{currentStock.Ticker}</h1>
                   <div className="stock-price">
-                    ${parseFloat(currentPrice).toFixed(2)}
+                    ${parseFloat(currentPrice).toFixed(2)} (
+                    {portfolio.find((s) => s.Ticker === stock.Ticker).quantity})
                   </div>
                 </div>
                 <div className="portfolio-stock-bottom">
                   <h4 className="shortened-name">{currentStock.Name}</h4>
-                  <div className="daily-change">{performance}</div>
+                  <div
+                    className="daily-change"
+                    style={
+                      performance < 0
+                        ? {
+                            backgroundColor: "#ec3936",
+                          }
+                        : {
+                            backgroundColor: "#14ae5c",
+                          }
+                    }
+                  >
+                    {performance}%
+                  </div>
                 </div>
                 {/*
                 <Button
