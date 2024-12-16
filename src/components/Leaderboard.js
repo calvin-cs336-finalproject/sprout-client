@@ -1,12 +1,11 @@
 // Import from react
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
 // Import from material ui
-import { Grid2, Typography, List, ListItem, Box } from '@mui/material';
+import { List, ListItem } from "@mui/material";
 
 // Imports from our firestore service
-import { getTopUsersByBalance } from '../services/firestoreService.js';
-
+import { getTopUsersByBalance } from "../services/firestoreService.js";
 
 // Leaderboard component
 function Leaderboard() {
@@ -30,23 +29,30 @@ function Leaderboard() {
 
   // Return the leaderboard component
   return (
-    <Grid2 item xs={12} md={4}>
-      <List>
-        {/* List of top users */}
-        {topUsers.map((user, index) => (
-          <ListItem key={user.id}>
-            <Box>
-              {/* Display user's username and balance */}
-              <Typography variant="subtitle1">
-                {index + 1}. {user.username || "Anonymous"}: $
-                {user.balance?.toFixed(2) || "0.00"}
-              </Typography>
-              <Typography variant="body2" color="textSecondary"></Typography>
-            </Box>
-          </ListItem>
-        ))}
-      </List>
-    </Grid2>
+    <List>
+      {topUsers.map((user, index) => (
+        <ListItem key={user.id}>
+          <div className="leaderboard-item">
+            <div
+              className="leaderboard-rank"
+              style={{
+                backgroundColor: `rgba(20, 174, 92, ${
+                  (100 - 10 * index) / 100
+                })`,
+              }}
+            >
+              {index + 1}
+            </div>
+            <div className="user-value">
+              <h3>{user.username || "Anonymous"}</h3>
+              <div className="price">
+                ${user.totalBalance?.toFixed(2) || "0.00"}
+              </div>
+            </div>
+          </div>
+        </ListItem>
+      ))}
+    </List>
   );
 }
 
