@@ -36,9 +36,8 @@ function Leaderboard() {
             <div
               className="leaderboard-rank"
               style={{
-                backgroundColor: `rgba(20, 174, 92, ${
-                  (100 - 10 * index) / 100
-                })`,
+                backgroundColor: `rgba(20, 174, 92, ${(100 - 10 * index) / 100
+                  })`,
               }}
             >
               {index + 1}
@@ -46,7 +45,8 @@ function Leaderboard() {
             <div className="user-value">
               <h3>{user.username || "Anonymous"}</h3>
               <div className="price">
-                ${user.totalBalance?.toFixed(2) || "0.00"}
+                {/* This should be user.totalBalance, but there is an error storing in DB as of now */}
+                ${user.balance?.toFixed(2) || "0.00"}
               </div>
             </div>
           </div>
