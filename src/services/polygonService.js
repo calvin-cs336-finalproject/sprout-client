@@ -9,6 +9,16 @@ const apiKey = POLYGON_API_KEY;
 let data;
 
 // Function to fetch partial data from the Polygon API
+/**
+ * Sends a GET request to Polygon.io to receive data about a single stock on a single day.
+ * The JSON returned has many details about the high and low price, volume, etc, but for the
+ * scope of this project we only need the date and close price.
+ *
+ *
+ * @param {*} ticker
+ * @param {*} date
+ * @returns {*} {date, closePrice}
+ */
 export const fetchOneSetOfDataFromAPI = async (ticker, date) => {
     const url = 'https://api.polygon.io/v1/open-close/' + ticker + '/' + date + '?adjusted=true&apiKey=' + apiKey;
     try {
@@ -23,6 +33,12 @@ export const fetchOneSetOfDataFromAPI = async (ticker, date) => {
 };
 
 // Function to fetch data from the Polygon API
+/**
+ *  The same thing as the function above, but with different error handling (from AI).
+ * @param {*} ticker
+ * @param {*} date
+ * @returns {*} {date, closePrice}
+ */
 export const fetchDataFromAPI = async (ticker, date) => {
     const url = 'https://api.polygon.io/v1/open-close/' + ticker + '/' + date + '?adjusted=true&apiKey=' + apiKey;
     try {
@@ -45,16 +61,33 @@ export const fetchDataFromAPI = async (ticker, date) => {
     }
 };
 
-// Create a delay function to wait for a certain amount of time for calling from the API
+/**
+ * A delay function that is used to control the amount of time between API calls.
+ * The query limit is set to 5 per minute, so to automate getting all the data required,
+ * we must query 5 times then wait.
+ *
+ * @param {*} ms
+ * @returns {*} Promise<void>
+ */
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// Function to fetch and store data for a given ticker and date range
+
+/**
+ * Fetches data for a particular stock from an start date to an end date.
+ * This function was used to fetch data from the api, then store that data into
+ * firebase. The delay is used here to make sure the throttle limit is not hit.
+ *
+ * Once the data is in firebase, we can use it however we need.
+ * @param {*} ticker
+ * @param {*} startDate
+ * @param {*} endDate
+ */
 export const fetchAndStoreData = async (ticker, startDate, endDate) => {
     const currentDate = new Date(startDate);
     let callCount = 0;
 
     while (currentDate <= new Date(endDate)) {
-        const formattedDate = currentDate.toISOString().split('T')[0];
+        const formattedDate = currentDate.toISOString().split('T')[0]; //AI helped with this
         const data = await fetchDataFromAPI(ticker, formattedDate);
 
         //console.log(typeof (data));
@@ -78,7 +111,14 @@ export const fetchAndStoreData = async (ticker, startDate, endDate) => {
     console.log("Finished fetching and storing data.");
 };
 
-// Function to fetch and store data for all companies in our list of top 20 NYSE companies
+
+/**
+ * Loops through each company that we have listed in the array, and fetches the data
+ * for that company from the start date to the end date.
+ * We used this function to fill the database with the data for the graphs.
+ * @param {*} startDate
+ * @param {*} endDate
+ */
 export const fetchDataOfAllCompanies = async (startDate, endDate) => {
     //execluded 'AAPL' and 'NVDA' since it is already filled
     const top20NYSECompanies = [
@@ -99,7 +139,12 @@ export const fetchDataOfAllCompanies = async (startDate, endDate) => {
     }
 };
 
-// Function to fetch and store data for all companies in our list of top 20 NYSE companies for a single day, a daily updater
+/**
+ * Fetches and stores data for all companies in the list of our top 20 NYSE companies for one day.
+ * This function (hopefully) is to be used by the cloud function to be scheduled to run once per day,
+ * and get the data for the day before.
+ * @param {*} date
+ */
 export const fetchDataOfAllCompaniesForOneDay = async (date) => {
     const top20NYSECompanies = [
         'AAPL', 'NVDA', 'MSFT', 'AMZN', 'GOOGL', 'META', 'TSLA', 'BRK.B', 'TSM', 'AVGO',
@@ -125,7 +170,9 @@ export const fetchDataOfAllCompaniesForOneDay = async (date) => {
     }
 
 };
-
+/**
+ * Tests for the functions
+ */
 //fetchAndStoreData('AMZN', '2024-11-06', '2024-12-06');
 //fetchOneSetOfDataFromAPI('BRK.B', '2024-11-06');
 //fetchDataOfAllCompanies('2024-12-07', '2024-12-11');
