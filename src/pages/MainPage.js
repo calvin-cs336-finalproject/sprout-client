@@ -85,9 +85,9 @@ function MainPage() {
           await setTotalUserBalance(
             user.uid,
             userBalance +
-              portfolio.reduce((sum, stock) => {
-                return sum + stock.currentPrice * stock.quantity;
-              }, 0)
+            portfolio.reduce((sum, stock) => {
+              return sum + stock.currentPrice * stock.quantity;
+            }, 0)
           );
         } catch (error) {
           console.error("Error fetching user data or profile:", error);
@@ -98,7 +98,7 @@ function MainPage() {
       }
     });
     return () => unsubscribe();
-  }, [navigate]);
+  }, [navigate, portfolio, user.uid, userBalance]);
 
   // Function to calculate the performance of a stock
   const calculateStockPerformance = (stock) => {
@@ -153,9 +153,9 @@ function MainPage() {
           updatedPortfolio = prev.map((item, index) =>
             index === stockIndex
               ? {
-                  ...item,
-                  quantity: item.quantity + 1,
-                }
+                ...item,
+                quantity: item.quantity + 1,
+              }
               : item
           );
         } else {
@@ -219,10 +219,10 @@ function MainPage() {
           .map((item) =>
             item.Ticker === stockToSell.Ticker
               ? {
-                  ...item,
-                  quantity: item.quantity - 1,
-                  totalInvested: item.totalInvested - item.averagePrice,
-                }
+                ...item,
+                quantity: item.quantity - 1,
+                totalInvested: item.totalInvested - item.averagePrice,
+              }
               : item
           )
           .filter((item) => item.quantity > 0);
