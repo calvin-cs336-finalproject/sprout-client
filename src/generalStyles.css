@@ -89,10 +89,13 @@ h4 {
   padding: 20px;
   padding-top: 17px;
   width: 220px;
+  margin-bottom: 22px;
+}
+
+.account-value-top {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  margin-bottom: 22px;
 }
 
 .account-value-right {
