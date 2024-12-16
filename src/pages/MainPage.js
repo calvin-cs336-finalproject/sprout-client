@@ -98,7 +98,8 @@ function MainPage() {
       }
     });
     return () => unsubscribe();
-  }, [navigate, portfolio, user.uid, userBalance]);
+  //}, [navigate, portfolio, user.uid, userBalance]);
+  }, []);
 
   // Function to calculate the performance of a stock
   const calculateStockPerformance = (stock) => {
