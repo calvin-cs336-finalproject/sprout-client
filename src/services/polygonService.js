@@ -8,33 +8,10 @@ import { POLYGON_API_KEY } from '../credentials.js';
 const apiKey = POLYGON_API_KEY;
 let data;
 
-// Function to fetch partial data from the Polygon API
 /**
- * Sends a GET request to Polygon.io to receive data about a single stock on a single day.
+ *  Sends a GET request to Polygon.io to receive data about a single stock on a single day.
  * The JSON returned has many details about the high and low price, volume, etc, but for the
  * scope of this project we only need the date and close price.
- *
- *
- * @param {*} ticker
- * @param {*} date
- * @returns {*} {date, closePrice}
- */
-export const fetchOneSetOfDataFromAPI = async (ticker, date) => {
-    const url = 'https://api.polygon.io/v1/open-close/' + ticker + '/' + date + '?adjusted=true&apiKey=' + apiKey;
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        console.log(data);
-        return { date: data.from, close: data.close };
-    } catch (error) {
-        console.error("Error fetching API data:", error);
-        return null;
-    }
-};
-
-// Function to fetch data from the Polygon API
-/**
- *  The same thing as the function above, but with different error handling (from AI).
  * @param {*} ticker
  * @param {*} date
  * @returns {*} {date, closePrice}
@@ -153,7 +130,7 @@ export const fetchDataOfAllCompaniesForOneDay = async (date) => {
     let count = 0;
     for (let ticker of top20NYSECompanies) {
         try {
-            const data = await fetchOneSetOfDataFromAPI(ticker, date);
+            const data = await fetchDataFromAPI(ticker, date);
             if (data) {
                 console.log('Storing data for ', ticker, ':', data);
                 await addStockData(ticker, data.date, data.close, "stocks");
@@ -176,4 +153,4 @@ export const fetchDataOfAllCompaniesForOneDay = async (date) => {
 //fetchAndStoreData('AMZN', '2024-11-06', '2024-12-06');
 //fetchOneSetOfDataFromAPI('BRK.B', '2024-11-06');
 //fetchDataOfAllCompanies('2024-12-07', '2024-12-11');
-//fetchDataOfAllCompaniesForOneDay('2024-12-06');
+fetchDataOfAllCompaniesForOneDay('2024-12-16');
