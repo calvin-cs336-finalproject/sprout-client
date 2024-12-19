@@ -210,11 +210,9 @@ export const updateUserPortfolio = async (userId, stock, action) => {
 
     if (stockDocSnap.exists()) {
       const existingStock = stockDocSnap.data();
-      const currentQuantity = existingStock.quantity || 0;
 
       // Calculate updated quantity based on action
-      const updatedQuantity =
-        action === "buy" ? currentQuantity + 1 : currentQuantity - 1;
+      const updatedQuantity = stock.quantity;
 
       if (updatedQuantity <= 0) {
         // Remove stock from portfolio if quantity is 0 or less
