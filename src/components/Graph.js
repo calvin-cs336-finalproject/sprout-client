@@ -24,7 +24,7 @@ export const accentColorDark = "#75daad";
 const tooltipStyles = {
   ...defaultStyles,
   background: "white",
-  border: "1px solid #14ae5c",
+  border: "1px solid black",
   color: "black",
 };
 
@@ -177,7 +177,7 @@ const Graph = withTooltip(
               style={{
                 ...defaultStyles,
                 background: "white",
-                border: "1px solid #14ae5c",
+                border: "1px solid black",
                 color: "black",
                 transform: "translateX(-50%)",
               }}

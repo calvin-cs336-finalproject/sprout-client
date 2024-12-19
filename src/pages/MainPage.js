@@ -111,7 +111,7 @@ function MainPage() {
   };
 
   // Function to handle buying a stock
-  const handleBuyStock = async (currentStock) => {
+  const handleBuyStock = async (currentStock, stockAmount) => {
     if (
       !currentStock ||
       !currentStock.Prices ||
@@ -129,8 +129,8 @@ function MainPage() {
     const price = latestPrice ? Object.values(latestPrice)[0] : 0;
 
     // Check if the user has enough balance to buy the stock and update the balance accordingly
-    if (userBalance >= price) {
-      const newBalance = userBalance - price;
+    if (userBalance >= (price * stockAmount)) {
+      const newBalance = userBalance - (price * stockAmount);
       setUserBalance(newBalance);
       updateUserBalance(user.uid, newBalance);
 
@@ -154,16 +154,18 @@ function MainPage() {
             index === stockIndex
               ? {
                 ...item,
-                quantity: item.quantity + 1,
+                quantity: Number(item.quantity) + Number(stockAmount),
               }
               : item
+
           );
+
         } else {
           updatedPortfolio = [
             ...prev,
             {
               Ticker: currentStock.Ticker,
-              quantity: 1,
+              quantity: stockAmount,
               currentPrice: price,
               percentChange: 0,
               purchasePrice: price,
@@ -200,16 +202,17 @@ function MainPage() {
   };
 
   // Function to handle selling a stock
-  const handleSellStock = async (stockToSell) => {
+  const handleSellStock = async (stockToSell, quantity) => {
     const currentStock = portfolio.find((s) => s.Ticker === stockToSell.Ticker);
     console.log("Current Stock:", currentStock);
     if (!currentStock) return;
 
-    if (currentStock.quantity > 0) {
-      const currentPrice = Object.values(
-        stockToSell.Prices[stockToSell.Prices.length - 1]
-      )[0];
-      const newBalance = userBalance + currentPrice;
+    const currentPrice = Object.values(
+      stockToSell.Prices[stockToSell.Prices.length - 1]
+    )[0];
+
+    if (currentStock.quantity > 0 && currentStock.quantity >= quantity) {
+      const newBalance = userBalance + (currentPrice * quantity);
       setUserBalance(newBalance);
       updateUserBalance(user.uid, newBalance);
 
@@ -220,7 +223,7 @@ function MainPage() {
             item.Ticker === stockToSell.Ticker
               ? {
                 ...item,
-                quantity: item.quantity - 1,
+                quantity: Number(item.quantity) - Number(quantity),
                 totalInvested: item.totalInvested - item.averagePrice,
               }
               : item
@@ -337,12 +340,6 @@ function MainPage() {
   const calculateOverallPerformance = () => {
     return ((totalBalance - 10000) / 10000) * 100;
   };
-
-  // const calculateStockPerformance = (stock) => {
-  //   return ((Object.values(stock.Prices[stock.Prices.length - 1])[0] -
-  //     Object.values(stock.Prices[stock.Prices.length - 2])[0]) /
-  //     Object.values(stock.Prices[stock.Prices.length - 1])[0]) * 100;
-  // }
 
   // Calculate the overall performance
   const overallPerformance = calculateOverallPerformance();

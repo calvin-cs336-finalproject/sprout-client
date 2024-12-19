@@ -1,5 +1,5 @@
 // Imports from react
-import React from "react";
+import React, {useState} from "react";
 
 // Imports from material ui
 import { Typography } from "@mui/material";
@@ -19,6 +19,15 @@ function SelectedStock({
   portfolio,
   wishlist,
 }) {
+  const [quantity, setQuantity] = useState();
+
+  // Function to save the quantity to local storage
+  const saveQuantity = (event) => {
+    const inputValue = event.target.value; // Get the current value from the event
+    setQuantity(inputValue); // Update the state
+    console.log(inputValue);
+  };
+
   // Return the SelectedStock component
   return (
     <div className="selected-stock-box">
@@ -57,19 +66,18 @@ function SelectedStock({
           <div className="selected-right-container">
             <div className="description-watch-box">
               <h4 className="description-title">Description:</h4>
-              {/* THIS CHUNK NEEDS TO BE FIXED */}
-              {wishlist.some((stock) => stock.id === selectedStock.id) ? (
-                <button onClick={() => handleAddToWishlist(selectedStock)}>
-                  <VisibilityIcon className="watch-icon" />
-                </button>
-              ) : (
+              {(wishlist.find((stock) => stock === selectedStock.Ticker)) ? (
                 <button
                   className="button"
                   onClick={() => handleRemoveFromWishlist(selectedStock.Ticker)}
                 >
-                  <VisibilityOffIcon className="watch-icon" />
+                  <VisibilityOffIcon className="watch-icon"/>
                 </button>
-              )}
+              ) : (
+                <button className="button" onClick={() => handleAddToWishlist(selectedStock)}>
+                  <VisibilityIcon className="watch-icon" />
+                </button>
+              ) }
             </div>
             <p className="selected-stock-description">
               {selectedStock.Description}
@@ -77,9 +85,9 @@ function SelectedStock({
             <div className="button-amount-container">
               <h4>Amount</h4>
               <div className="buttons-container">
-                <button className="buy"> BUY</button>
-                <input type="number" className="amount"></input>
-                <button className="sell"> SELL</button>
+                <button className="buy" onClick={() => handleBuyStock(selectedStock, quantity)}> BUY</button>
+                <input type="number" className="amount" min="1" onChange={saveQuantity} value={quantity}></input>
+                <button className="sell" onClick={() => handleSellStock(selectedStock, quantity)}> SELL</button>
                 {/* <Button
                 variant="contained"
                 color="primary"
