@@ -83,9 +83,9 @@ function MainPage() {
           await updatePortfolioWithLatestPrices(currentUser.uid, latestPrices);
 
           await setTotalUserBalance(
-            user.uid,
-            userBalance +
-            portfolio.reduce((sum, stock) => {
+            currentUser.uid,
+            currentUser.balance +
+            profile.reduce((sum, stock) => {
               return sum + stock.currentPrice * stock.quantity;
             }, 0)
           );
@@ -98,7 +98,7 @@ function MainPage() {
       }
     });
     return () => unsubscribe();
-  }, [navigate, portfolio, user.uid, userBalance]);
+  }, [navigate]);
 
   // Function to calculate the performance of a stock
   const calculateStockPerformance = (stock) => {
