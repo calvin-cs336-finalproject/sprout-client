@@ -1,4 +1,3 @@
-// Import functions from firebase and our database
 import {
   arrayRemove,
   arrayUnion,
@@ -13,11 +12,16 @@ import {
   orderBy,
   limit,
   deleteDoc,
-  writeBatch,
 } from "firebase/firestore";
 import { db } from "../firebase.js";
 
-// Function to add a stock to the user's wishlist
+/**
+ * This function is used to add a selected stock to the watchlist -- if the stock
+ * already exists in the watchlist on database, it is not added again. This is what the
+ * arrayUnion function is used for.
+ * @param {*} userId
+ * @param {*} stock
+ */
 export const addToWishlist = async (userId, stock) => {
   try {
     if (!stock.Ticker) {
@@ -39,7 +43,13 @@ export const addToWishlist = async (userId, stock) => {
   }
 };
 
-// Function to fetch the user's wishlist
+/**
+ * Fetch the user's watchlist from the database.
+ * Returns an empty list if the watchlist is empty, or the user doesn't
+ * exist (but the user should always exist if this function is called).
+ *
+ * @param {*} userId
+ */
 export const getWishlist = async (userId) => {
   try {
     // Get a reference to the user's document
@@ -65,7 +75,14 @@ export const getWishlist = async (userId) => {
   }
 };
 
-// Function to subscribe to changes in the user's wishlist
+/**
+ * Function to subscribe to changes in the user's wishlist.
+ * The onSnapshot() function listens for changes to the watchlist.
+ * If a change occurs, the watchlist is iterated over and then returned
+ * via a callback.
+ * @param {*} userId
+ * @param {*} callback
+ */
 export const subscribeToWishlist = (userId, callback) => {
   const wishlistRef = collection(db, "users", userId, "wishlist");
   return onSnapshot(wishlistRef, (querySnapshot) => {
@@ -77,7 +94,13 @@ export const subscribeToWishlist = (userId, callback) => {
   });
 };
 
-// Function to remove a stock from the user's wishlist
+/**
+ * Remove a stock from the user's wishlist. The removeArray()
+ * function is used to remove the ticker from the list nicely.
+ *
+ * @param {*} userId
+ * @param {*} stockTicker
+ */
 export const deleteFromWishlist = async (userId, stockTicker) => {
   try {
     if (!stockTicker) {
@@ -99,29 +122,36 @@ export const deleteFromWishlist = async (userId, stockTicker) => {
   }
 };
 
-// Function to update the user's portfolio with the latest stock prices
+/**
+ * Updates the user's portfolio to reflect the most recent share price of the stock.
+ * This is done by looping through each stock that the user has in their portfolio,
+ * and updating each stock to reflect the new price and the percent change compared to
+ * the old price.
+ *
+ * @param {*} userId
+ * @param {*} latestPrices
+ */
 export const updatePortfolioWithLatestPrices = async (userId, latestPrices) => {
   try {
     const userPortfolioRef = collection(db, "users", userId, "portfolio");
     const querySnapshot = await getDocs(userPortfolioRef);
 
-    const batch = writeBatch(db); // Create a batch instance
-
     // Iterate over each stock in the user's portfolio
-    querySnapshot.forEach((docSnapshot) => {
+    for (const docSnapshot of querySnapshot.docs) {
       const stock = docSnapshot.data();
       const latestPrice = latestPrices[stock.Ticker];
+
       if (latestPrice !== undefined) {
         const stockDocRef = doc(db, "users", userId, "portfolio", stock.Ticker);
-        batch.update(stockDocRef, {
+
+        await updateDoc(stockDocRef, {
           currentPrice: latestPrice,
           percentChange:
             ((latestPrice - stock.purchasePrice) / stock.purchasePrice) * 100,
         });
       }
-    });
+    }
 
-    await batch.commit();
     console.log(`Successfully updated portfolio for user: ${userId}`);
   } catch (error) {
     console.error("Error updating portfolio with latest prices: ", error);
@@ -129,7 +159,12 @@ export const updatePortfolioWithLatestPrices = async (userId, latestPrices) => {
   }
 };
 
-// Function to fetch the latest prices for all stocks in a collection
+/**
+ * Gets the latest prices from the database and returns them
+ * as an object with key, value pairs for each stock.
+ * @param {*} collectionName
+ * @returns
+ */
 export const getLatestPrices = async (collectionName) => {
   try {
     const collectionRef = collection(db, collectionName);
@@ -151,6 +186,17 @@ export const getLatestPrices = async (collectionName) => {
   }
 };
 
+/**
+ * Updates the user's portfolio in the database whether the user is buying or selling shares
+ * of a stock. If the stock does not exist in the portfolio and the user wants to buy it, then
+ * the stock is added to the portfolio. If the user wants to sell a share, a share of that stock
+ * is removed - if it is the last share of the stock, the entire stock must be removed from the
+ * portfolio.
+ *
+ * @param {*} userId
+ * @param {*} stock
+ * @param {*} action
+ */
 export const updateUserPortfolio = async (userId, stock, action) => {
   try {
     const userPortfolioRef = collection(db, "users", userId, "portfolio");
@@ -158,9 +204,9 @@ export const updateUserPortfolio = async (userId, stock, action) => {
     const stockDocSnap = await getDoc(stockDocRef);
 
     // Ensure that stock has the required properties
-    if (!stock.Ticker) {
-      throw new Error("Stock data is incomplete. Ensure Ticker is defined.");
-    }
+    // if (!stock.Ticker) {
+    //   throw new Error("Stock data is incomplete. Ensure Ticker is defined.");
+    // }
 
     if (stockDocSnap.exists()) {
       const existingStock = stockDocSnap.data();
@@ -215,11 +261,16 @@ export const updateUserPortfolio = async (userId, stock, action) => {
   }
 };
 
+/**
+ * Updates the total balance for the user in the database.
+ * @param {*} userId
+ * @param {*} totalBalance
+ */
 export const setTotalUserBalance = async (userId, totalBalance) => {
   try {
     const userDocRef = doc(db, "users", userId);
     await updateDoc(userDocRef, {
-      totalBalance: totalBalance,
+      totalBalance: this.totalBalance,
     });
 
     console.log(`User total balance updated to: ${totalBalance}`);
@@ -229,7 +280,14 @@ export const setTotalUserBalance = async (userId, totalBalance) => {
   }
 };
 
-// Funtion to create a user with an initial balance and initialize their portfolio subcollection
+/**
+ * When an account is added, a document in the database needs to be created
+ * to store account details, and set an initial balance.
+ * @param {*} userId
+ * @param {*} email
+ * @param {*} username
+ * @param {*} initialBalance
+ */
 export const createUserWithBalance = async (
   userId,
   email,
@@ -259,7 +317,10 @@ export const createUserWithBalance = async (
   }
 };
 
-// Function to fetch the user's portfolio
+/**
+ * returns a list of stocks that are in the users portfolio
+ * @param {*} userId
+ */
 export const getUserPortfolio = async (userId) => {
   try {
     const userPortfolioRef = collection(db, "users", userId, "portfolio");
@@ -280,7 +341,12 @@ export const getUserPortfolio = async (userId) => {
   }
 };
 
-// Function to subscribe to the user's portfolio changes
+/**
+ * Listen for event changes in the users portfolio, so when
+ * changes to the DB occur so that the display can be updated accordingly
+ * @param {*} userId
+ * @param {*} callback
+ */
 export const subscribeToUserPortfolio = (userId, callback) => {
   const userPortfolioRef = collection(db, "users", userId, "portfolio");
   return onSnapshot(userPortfolioRef, (querySnapshot) => {
@@ -292,7 +358,17 @@ export const subscribeToUserPortfolio = (userId, callback) => {
   });
 };
 
-// Fucnction to add stock data to our stock database collection
+/**
+ * Adds stock data to the database.
+ * This function is used by the PolygonService. Once data is pulled
+ * from the API, it uses this function to store the stock data into
+ * firestore. There is a check to make sure that duplicate data is not
+ * added.
+ * @param {*} ticker
+ * @param {*} date
+ * @param {*} closePrice
+ * @param {*} collectionName
+ */
 export const addStockData = async (
   ticker,
   date,
@@ -352,7 +428,11 @@ export const addStockData = async (
   }
 };
 
-// Function to fetch all our database's stock data
+/**
+ *Fetches data for all stocks in the "stocks" collection
+ *
+ * @param {*} collectionName
+ */
 export const getAllStockData = async (collectionName) => {
   try {
     const collectionRef = collection(db, collectionName);
@@ -372,6 +452,13 @@ export const getAllStockData = async (collectionName) => {
 };
 
 // Function to subscribe to stock data changes
+/**
+ * Event listener to see if there are changes in a particular
+ * stock can be displayed - this is not currently used
+ * @param {*} ticker
+ * @param {*} collectionName
+ * @param {*} callback
+ */
 export const subscribeToStockData = (ticker, collectionName, callback) => {
   const docRef = doc(db, collectionName, ticker);
   return onSnapshot(docRef, (docSnap) => {
