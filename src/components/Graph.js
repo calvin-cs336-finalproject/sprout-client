@@ -1,132 +1,194 @@
-// Imports from react
-import React from "react";
+// Imports from React
+import React, { useMemo, useCallback } from "react";
 
 // Imports from visx
-import { LinePath } from "@visx/shape";
+import { AreaClosed, Line, LinePath, Bar } from "@visx/shape";
+import { LinearGradient } from "@visx/gradient";
 import { scaleTime, scaleLinear } from "@visx/scale";
-import { AxisBottom, AxisLeft } from "@visx/axis";
-import { Group } from "@visx/group";
-import { curveMonotoneX } from "@visx/curve";
-import { useTooltip, useTooltipInPortal } from "@visx/tooltip";
+import {
+  withTooltip,
+  Tooltip,
+  TooltipWithBounds,
+  defaultStyles,
+} from "@visx/tooltip";
 import { localPoint } from "@visx/event";
+import { curveLinear } from "@visx/curve";
+import { min, max, extent, bisector } from "@visx/vendor/d3-array";
+import { timeFormat } from "@visx/vendor/d3-time-format";
 
-// Other imports
-import { bisector } from "d3-array";
+// Styling and utility constants
+export const background = "#3b6978";
+export const background2 = "#204051";
+export const accentColor = "#edffea";
+export const accentColorDark = "#75daad";
+const tooltipStyles = {
+  ...defaultStyles,
+  background: "white",
+  border: "1px solid #14ae5c",
+  color: "black",
+};
 
-// Our graph component
-const Graph = ({ data, width = 600, height = 250 }) => {
-  const margin = { top: 20, right: 30, bottom: 50, left: 50 };
-  const innerWidth = width - margin.left - margin.right;
-  const innerHeight = height - margin.top - margin.bottom;
+// Accessors and formatting utilities
+const formatDate = timeFormat("%b %d, '%y");
+const getDate = (d) => new Date(d.date);
+const getStockValue = (d) => d.close;
+const bisectDate = bisector((d) => new Date(d.date)).left;
 
-  // Accessors for X and Y values
-  const getX = (d) => new Date(d.date);
-  const getY = (d) => d.close;
+const Graph = withTooltip(
+  ({
+    data,
+    width = 400,
+    height = 250,
+    margin = 8,
+    showTooltip,
+    hideTooltip,
+    tooltipData,
+    tooltipTop = 0,
+    tooltipLeft = 0,
+  }) => {
+    if (width < 10) return null;
 
-  // Scales on the graph
-  const xScale = scaleTime({
-    domain: [Math.min(...data.map(getX)), Math.max(...data.map(getX))],
-    range: [0, innerWidth],
-  });
-  const yScale = scaleLinear({
-    domain: [
-      Math.min(...data.map(getY)) * 0.9,
-      Math.max(...data.map(getY)) * 1.1,
-    ],
-    range: [innerHeight, 0], // Invert Y-axis
-  });
+    const innerWidth = width - 16;
+    const innerHeight = height - 16;
 
-  // Determine line color based on trend of the current stock
-  const firstValue = getY(data[0]);
-  const lastValue = getY(data[data.length - 1]);
-  const lineColor = lastValue > firstValue ? "green" : "red";
+    // Scales
+    const dateScale = useMemo(
+      () =>
+        scaleTime({
+          range: [margin, innerWidth + margin],
+          domain: extent(data, getDate),
+        }),
+      [innerWidth, margin, data]
+    );
+    const stockValueScale = useMemo(
+      () =>
+        scaleLinear({
+          range: [innerHeight + margin, margin],
+          domain: [
+            min(data, getStockValue) * 0.9,
+            max(data, getStockValue) * 1.05,
+          ],
+          nice: true,
+        }),
+      [margin, innerHeight, data]
+    );
 
-  // Tooltip for graph highlighting
-  const { showTooltip, hideTooltip, tooltipData, tooltipLeft, tooltipTop } = useTooltip();
-  const { containerRef, TooltipInPortal } = useTooltipInPortal({
-    scroll: true,
-    detectBounds: true,
-  });
+    const firstValue = getStockValue(data[0]);
+    const lastValue = getStockValue(data[data.length - 1]);
+    const lineColor = lastValue > firstValue ? "#14ae5c" : "#ec3936";
+    const gradientStart = lastValue > firstValue ? "#14ae5c50" : "#ec393650";
+    const gradientEnd = lastValue > firstValue ? "#14ae5c10" : "#ec393610";
+    const rotation = lastValue > firstValue ? -10 : 10;
 
-  const bisectDate = bisector(d => new Date(d.date)).left;
+    // Tooltip handler
+    const handleTooltip = useCallback(
+      (event) => {
+        const { x } = localPoint(event) || { x: 0 };
+        const x0 = dateScale.invert(x);
+        const index = bisectDate(data, x0, 1);
+        const d0 = data[index - 1];
+        const d1 = data[index];
+        let d = d0;
+        if (d1 && getDate(d1)) {
+          d =
+            x0.valueOf() - getDate(d0).valueOf() >
+            getDate(d1).valueOf() - x0.valueOf()
+              ? d1
+              : d0;
+        }
+        showTooltip({
+          tooltipData: d,
+          tooltipLeft: dateScale(getDate(d)),
+          tooltipTop: stockValueScale(getStockValue(d)),
+        });
+      },
+      [showTooltip, dateScale, stockValueScale, data]
+    );
 
-  // Check for mouse movement on the graph
-  const handleMouseMove = (event) => {
-    const { x } = localPoint(event) || { x: 0 };
-    const x0 = xScale.invert(x - margin.left);
-    const index = bisectDate(data, x0, 1);
-    const d0 = data[index - 1];
-    const d1 = data[index];
-    let d = d0;
-    if (d1 && getX(d1)) {
-      d = x0 - getX(d0) > getX(d1) - x0 ? d1 : d0;
-    }
-    showTooltip({
-      tooltipData: d,
-      tooltipLeft: xScale(getX(d)),
-      tooltipTop: yScale(getY(d)),
-    });
-  };
-
-  // Return the graph with all the proper elements
-  return (
-    <div ref={containerRef}>
-      <svg width={width} height={height}>
-        <Group left={margin.left} top={margin.top}>
-          {/* Line Path with correct data*/}
+    return (
+      <div>
+        <svg width={width} height={height}>
           <LinePath
             data={data}
-            x={(d) => xScale(getX(d))}
-            y={(d) => yScale(getY(d))}
+            x={(d) => dateScale(getDate(d)) ?? 0}
+            y={(d) => stockValueScale(getStockValue(d)) ?? 0}
             stroke={lineColor}
-            strokeWidth={1}
-            curve={curveMonotoneX}
+            strokeWidth={2}
+            curve={curveLinear}
           />
-
-          {/* X-Axis */}
-          <AxisBottom
-            scale={xScale}
-            top={innerHeight}
-            tickFormat={(d) => d.toLocaleDateString().split("/2024")[0]}
+          <LinearGradient
+            id="area-gradient"
+            from={gradientStart}
+            to={gradientEnd}
+            toOpacity={0.6}
+            rotate={rotation}
           />
-
-          {/* Y-Axis */}
-          <AxisLeft scale={yScale} />
-
-          {/* Overlay for capturing mouse events from the user */}
-          <rect
+          <AreaClosed
+            data={data}
+            x={(d) => dateScale(getDate(d)) ?? 0}
+            y={(d) => stockValueScale(getStockValue(d)) ?? 0}
+            yScale={stockValueScale}
+            fill="url(#area-gradient)"
+            curve={curveLinear}
+          />
+          <Bar
+            x={margin}
+            y={margin}
             width={innerWidth}
             height={innerHeight}
             fill="transparent"
-            onMouseMove={handleMouseMove}
+            onMouseMove={handleTooltip}
             onMouseLeave={hideTooltip}
           />
-        </Group>
-      </svg>
-
-      {/* Tooltip for the graph from mouse hovering */}
-      {tooltipData && (
-        <TooltipInPortal
-          key={Math.random()}
-          top={tooltipTop}
-          left={tooltipLeft}
-          style={{
-            backgroundColor: 'rgba(0,0,0,0.8)',
-            color: 'white',
-            padding: '0.5rem',
-            borderRadius: '4px',
-          }}
-        >
+          {tooltipData && (
+            <g>
+              <Line
+                from={{ x: tooltipLeft, y: margin }}
+                to={{ x: tooltipLeft, y: innerHeight + margin }}
+                stroke={lineColor}
+                strokeWidth={2}
+                pointerEvents="none"
+              />
+              <circle
+                cx={tooltipLeft}
+                cy={tooltipTop}
+                r={4}
+                fill={lineColor}
+                stroke="white"
+                strokeWidth={2}
+                pointerEvents="none"
+              />
+            </g>
+          )}
+        </svg>
+        {tooltipData && (
           <div>
-            <strong>{getX(tooltipData).toLocaleDateString()}</strong>
+            <TooltipWithBounds
+              key={Math.random()}
+              top={tooltipTop - 12}
+              left={tooltipLeft + 12}
+              style={tooltipStyles}
+            >
+              {`$${getStockValue(tooltipData)}`}
+            </TooltipWithBounds>
+            <Tooltip
+              top={innerHeight + margin - 14}
+              left={tooltipLeft}
+              style={{
+                ...defaultStyles,
+                background: "white",
+                border: "1px solid #14ae5c",
+                color: "black",
+                transform: "translateX(-50%)",
+              }}
+            >
+              {formatDate(getDate(tooltipData))}
+            </Tooltip>
           </div>
-          <div>
-            <strong>{getY(tooltipData).toFixed(2)}</strong>
-          </div>
-        </TooltipInPortal>
-      )}
-    </div>
-  );
-};
+        )}
+      </div>
+    );
+  }
+);
 
 export default Graph;

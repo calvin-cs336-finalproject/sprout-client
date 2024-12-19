@@ -28,7 +28,7 @@ function Wishlist({
           sx={{
             display: "flex",
             flexWrap: "nowrap",
-            gap: "1rem",
+            // gap: "1rem",
             justifyContent: "flex-start",
             overflowX: "auto",
           }}
@@ -55,10 +55,10 @@ function Wishlist({
                 sx={{
                   padding: "0.5rem",
                   borderRadius: "8px",
-                  width: "180px",
+                  width: "194px",
                   display: "flex",
                   flexDirection: "column",
-                  alignItems: "center",
+                  // alignItems: "center",
                   cursor: "pointer",
                   backgroundColor:
                     selectedStock &&
@@ -69,7 +69,7 @@ function Wishlist({
                 }}
                 onClick={() => handleSelectStock(currentStock)}
               >
-                <div className="watch-stock-top">
+                <div className="img-ticker-title">
                   {currentStock && (
                     <img
                       className="watch-img"
@@ -99,27 +99,6 @@ function Wishlist({
                     {dailyPerformance}%
                   </div>
                 </div>
-                {/* <Typography variant="subtitle1">
-                  {ticker} - ${currentPrice.toFixed(2)}
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Change: {percentChange.toFixed(2)}%
-                </Typography>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={(e) => {e.stopPropagation(); handleRemoveFromWishlist(ticker)}}
-                  style={{ marginTop: "0.5rem" }}
-                >
-                  Remove
-                </Button>
-                {currentStock && (
-                  <img
-                    className="stock-img"
-                    src={currentStock.Image}
-                    alt={currentStock.Name}
-                  />
-                )} */}
               </Box>
             );
           })}

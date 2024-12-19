@@ -61,20 +61,14 @@ const AuthPage = () => {
 
   // Return the authentication page/view with all the neccessary components
   return (
-    <div style={{ width: "100vw", height: "100vh" }}>
+    <div style={{ width: "100vw", height: "100vh", overflow: "hidden" }}>
       <img
         className="logo"
         src="/SproutLogo.png"
         alt="Sprout Logo"
         style={{ display: "block", margin: "0 auto", maxWidth: "100px" }}
       />
-      <Box
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        mt={5}
-        className="log-in-page"
-      >
+      <div className="centered-box">
         <Box className="log-in-box">
           <Typography
             variant="h4"
@@ -131,13 +125,13 @@ const AuthPage = () => {
         </Box>
         <Button
           onClick={() => setIsSignUp((prev) => !prev)}
-          style={{ marginBottom: "10%" }}
+          style={{ marginBottom: "10%", width: "300px" }}
         >
           {isSignUp
             ? "Already have an account? Sign In"
             : "Don't have an account? Sign Up"}
         </Button>
-      </Box>
+      </div>
     </div>
   );
 };

@@ -85,9 +85,9 @@ function MainPage() {
           await setTotalUserBalance(
             currentUser.uid,
             currentUser.balance +
-            profile.reduce((sum, stock) => {
-              return sum + stock.currentPrice * stock.quantity;
-            }, 0)
+              profile.reduce((sum, stock) => {
+                return sum + stock.currentPrice * stock.quantity;
+              }, 0)
           );
         } catch (error) {
           console.error("Error fetching user data or profile:", error);
@@ -344,7 +344,6 @@ function MainPage() {
   //     Object.values(stock.Prices[stock.Prices.length - 1])[0]) * 100;
   // }
 
-
   // Calculate the overall performance
   const overallPerformance = calculateOverallPerformance();
 
@@ -359,12 +358,12 @@ function MainPage() {
           style={
             totalBalance < 10000
               ? {
-                  border: "1px solid rgba(236, 57, 54, 0.65)",
-                  boxShadow: "0px 2px 18.5px -4px rgba(236, 67, 67, 0.4)",
+                  // border: "1px solid rgba(236, 57, 54, 0.65)",
+                  boxShadow: "0px 2px 18.5px -4px rgba(236, 67, 67, 0.55)",
                 }
               : {
-                  border: "1px solid rgba(20, 174, 92, 0.6)",
-                  boxShadow: "0px 2px 18.5px -4px rgba(20, 174, 92, 0.35)",
+                  // border: "1px solid rgba(20, 174, 92, 0.6)",
+                  boxShadow: "0px 2px 18.5px -4px rgba(20, 174, 92, 0.7)",
                 }
           }
         >
@@ -476,6 +475,8 @@ function MainPage() {
           handleSellStock={handleSellStock}
           handleAddToWishlist={handleAddToWishlist}
           handleRemoveFromWishlist={handleRemoveFromWishlist}
+          portfolio={portfolio}
+          wishlist={wishlist}
         />
         {/* Render the Wishlist component */}
         <Wishlist
